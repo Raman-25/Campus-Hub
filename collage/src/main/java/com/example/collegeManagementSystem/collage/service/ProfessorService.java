@@ -2,7 +2,9 @@ package com.example.collegeManagementSystem.collage.service;
 
 import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
+import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class ProfessorService {
 
     private final ProfessorRepository professorRepository;
     private final ModelMapper modelMapper;
+    private final SubjectRepository subjectRepository;
 
     public ProfessorDto createNewProfessor(ProfessorDto professorDto) {
 
@@ -65,5 +68,26 @@ public class ProfessorService {
     public void deleteProfessorById(Long id) {
 
         professorRepository.deleteById(id);
+    }
+
+    // MAPPING APIS
+
+
+    public void assignSubject(Long professorId, Long subjectId) {
+
+     ProfessorEntity professorEntity = professorRepository.findById(professorId)
+             .orElseThrow();
+
+     SubjectEntity subjectEntity = subjectRepository.findById(subjectId)
+             .orElseThrow();
+
+    subjectEntity.setProfessor(professorEntity); //Because the subject is the owing side
+    subjectRepository.save(subjectEntity);
+    }
+
+    public List<SubjectEntity> getProfessorAllSubjects(Long professorId) {
+
+        ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
+        return professorEntity.getSubjects();
     }
 }

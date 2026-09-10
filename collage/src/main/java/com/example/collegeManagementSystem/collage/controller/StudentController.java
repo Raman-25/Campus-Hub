@@ -1,7 +1,9 @@
 package com.example.collegeManagementSystem.collage.controller;
 
 
+import com.example.collegeManagementSystem.collage.dto.AdmissionRecordDto;
 import com.example.collegeManagementSystem.collage.dto.StudentDto;
+import com.example.collegeManagementSystem.collage.service.AdmissionRecordService;
 import com.example.collegeManagementSystem.collage.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
+    private final AdmissionRecordService admissionRecordService;
 
     @PostMapping
     public StudentDto createNewStudent(@RequestBody StudentDto studentDto) {
@@ -43,6 +46,14 @@ public class StudentController {
     public void deleteStudentById(@PathVariable(name = "StudentId") Long StudentId) {
         studentService.deleteStudentById(StudentId);
     }
+
+    //MAPPED API
+
+    @PostMapping("/{id}/admission-record")
+    public AdmissionRecordDto createNewAdmissionRecordByStudentID(@PathVariable Long id, @RequestBody AdmissionRecordDto admissionRecordDto){
+        return admissionRecordService.createNewAdmissionRecordByStudentID(id,admissionRecordDto);
+    }
+
 
 }
 

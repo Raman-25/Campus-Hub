@@ -14,11 +14,6 @@ public class AdmissionRecordController {
 
     private final AdmissionRecordService admissionRecordService;
 
-    @PostMapping
-    public AdmissionRecordDto createAdmissionRecord(
-            @RequestBody AdmissionRecordDto admissionRecordDto) {
-        return admissionRecordService.createAdmissionRecord(admissionRecordDto);
-    }
 
     @GetMapping
     public List<AdmissionRecordDto> getAllAdmissionRecords() {

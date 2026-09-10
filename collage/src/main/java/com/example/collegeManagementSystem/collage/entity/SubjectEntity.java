@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,10 +22,12 @@ public class SubjectEntity {
     @Column(length = 100, nullable = false)
     private String title;
 
+    @JsonIgnore //when we get subject entity we may get this to ignore this added the ignore
     @ManyToOne
     @JoinColumn(name = "professor_id")
     private ProfessorEntity professor;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "subjects")
     private List<StudentEntity> students;  //mapped by give the inverse side
 }

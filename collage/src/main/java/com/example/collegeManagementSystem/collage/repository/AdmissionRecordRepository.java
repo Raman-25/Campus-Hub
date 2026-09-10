@@ -1,5 +1,7 @@
 package com.example.collegeManagementSystem.collage.repository;
 
+import com.example.collegeManagementSystem.collage.dto.AdmissionRecordDto;
+import com.example.collegeManagementSystem.collage.dto.NewAdmissionDto;
 import com.example.collegeManagementSystem.collage.entity.AdmissionRecordEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

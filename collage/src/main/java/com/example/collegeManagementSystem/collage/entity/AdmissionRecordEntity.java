@@ -18,7 +18,8 @@ public class AdmissionRecordEntity {
     @Column(nullable = false)
     private Integer fees;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL) //we put cascade at admission record so it work adm_recd-->student
     @JoinColumn(name = "student_id", unique = true)
     private StudentEntity student;
+
 }
