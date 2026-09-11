@@ -72,6 +72,7 @@ public class ProfessorService {
 
     // MAPPING APIS
 
+    //PROFESSOR-SUBJECT(ONE TO MANY)
 
     public void assignSubject(Long professorId, Long subjectId) {
 
@@ -89,5 +90,24 @@ public class ProfessorService {
 
         ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
         return professorEntity.getSubjects();
+    }
+
+    public void deleteASubjectFromProfessor(Long professorId, Long subjectId) {
+        ProfessorEntity professorEntity = professorRepository.findById(professorId)
+                .orElseThrow();
+
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectId)
+                .orElseThrow();
+
+        if(subjectEntity.getProfessor().getId().equals(professorId)){
+            subjectEntity.setProfessor(null);
+            subjectRepository.save(subjectEntity);
+
+        }
+    }
+    public ProfessorEntity getSubjectProfessor(Long subjectId) {
+
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow();
+        return subjectEntity.getProfessor();
     }
 }

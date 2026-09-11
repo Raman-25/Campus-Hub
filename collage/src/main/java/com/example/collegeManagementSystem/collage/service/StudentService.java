@@ -1,12 +1,17 @@
 package com.example.collegeManagementSystem.collage.service;
 
 import com.example.collegeManagementSystem.collage.dto.StudentDto;
+import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
+import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
+import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
+import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +24,8 @@ public class StudentService{
 
     private final StudentRepository studentRepository;
     private final ModelMapper modelMapper;
+    private final ProfessorRepository professorRepository;
+    private final SubjectRepository subjectRepository;
 
 
     public StudentDto createNewStudent(StudentDto studentDto) {
@@ -53,5 +60,69 @@ public class StudentService{
     public void deleteStudentById(Long StudentId) {
         StudentEntity  studentEntity = studentRepository.findById(StudentId).orElseThrow();
         studentRepository.deleteById(StudentId);
+    }
+
+    //Mapping Apis
+
+    //PROFESSOR-STUDENT(MANY TO MANY)
+
+    public void assignProfessorToaStudent(Long studentId, Long professorId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
+        ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
+
+        professorEntity.getStudents().add(studentEntity);  //since professor is the owning side so we add student here
+        professorRepository.save(professorEntity);
+    }
+
+    public List<StudentEntity> getAllStudentsOfProfessors(Long professorId) {
+
+         ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
+         return  professorEntity.getStudents();
+    }
+
+    public List<ProfessorEntity>getAllProfessorOfAStudent(Long studentId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
+
+        return studentEntity.getProfessors();
+
+    }
+
+    public void deleteProfessorFromAStudent(Long studentId, Long professorId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
+
+        ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
+
+        professorEntity.getStudents().remove(studentEntity);
+        professorRepository.save(professorEntity);
+    }
+
+    //STUDENT-SUBJECT (MANY TO MANY)
+
+    public void assignStudentASubject(Long studentId, Long subjectId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow();
+
+        studentEntity.getSubjects().add(subjectEntity);  //since student is the owning side so we add subject here
+        studentRepository.save(studentEntity);
+    }
+
+    public List<SubjectEntity> getAllSubjectsOfAStudent(Long studentId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
+        return  studentEntity.getSubjects();
+    }
+
+    public void deleteSubjectFromAStudent(Long studentId, Long subjectId) {
+
+        StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
+
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow();
+
+        studentEntity.getSubjects().remove(subjectEntity);
+        studentRepository.save(studentEntity);
     }
 }

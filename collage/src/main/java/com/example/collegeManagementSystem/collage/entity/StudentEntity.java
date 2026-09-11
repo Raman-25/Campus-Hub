@@ -4,6 +4,7 @@ package com.example.collegeManagementSystem.collage.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,8 +22,8 @@ public class StudentEntity {
     @Column(length = 100, nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "students")
-    private List<ProfessorEntity> professors;
+    @ManyToMany(mappedBy = "students") //inverse side
+    private List<ProfessorEntity> professors = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -31,9 +32,5 @@ public class StudentEntity {
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private List<SubjectEntity> subjects;
-
-
-
-
 
 }

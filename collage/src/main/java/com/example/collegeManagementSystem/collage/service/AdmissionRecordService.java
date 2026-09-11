@@ -6,6 +6,7 @@ import com.example.collegeManagementSystem.collage.entity.AdmissionRecordEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.repository.AdmissionRecordRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -72,6 +73,7 @@ public class AdmissionRecordService {
     }
 
 
+    @Transactional
     public AdmissionRecordDto createNewAdmission(NewAdmissionDto newAdmissionDto) {
 
         StudentEntity studentEntity = new StudentEntity();
