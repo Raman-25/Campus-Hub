@@ -1,6 +1,8 @@
 package com.example.collegeManagementSystem.collage.service;
 
+import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.StudentDto;
+import com.example.collegeManagementSystem.collage.dto.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
@@ -8,12 +10,12 @@ import com.example.collegeManagementSystem.collage.repository.ProfessorRepositor
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Collections;
+
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,11 +83,14 @@ public class StudentService{
          return  professorEntity.getStudents();
     }
 
-    public List<ProfessorEntity>getAllProfessorOfAStudent(Long studentId) {
+    public List<ProfessorDto>getAllProfessorOfAStudent(Long studentId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
 
-        return studentEntity.getProfessors();
+        return studentEntity.getProfessors().stream()
+                .map(professorEntity ->
+                        modelMapper.map(professorEntity, ProfessorDto.class))
+                .collect(Collectors.toList());
 
     }
 
@@ -110,10 +115,13 @@ public class StudentService{
         studentRepository.save(studentEntity);
     }
 
-    public List<SubjectEntity> getAllSubjectsOfAStudent(Long studentId) {
+    public List<SubjectDto> getAllSubjectsOfAStudent(Long studentId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
-        return  studentEntity.getSubjects();
+        return studentEntity.getSubjects().stream()
+                .map(subjectEntity ->
+                        modelMapper.map(subjectEntity, SubjectDto.class))
+                .collect(Collectors.toList());
     }
 
     public void deleteSubjectFromAStudent(Long studentId, Long subjectId) {

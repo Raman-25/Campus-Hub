@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.service;
 
 import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
+import com.example.collegeManagementSystem.collage.dto.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,10 +88,14 @@ public class ProfessorService {
     subjectRepository.save(subjectEntity);
     }
 
-    public List<SubjectEntity> getProfessorAllSubjects(Long professorId) {
+    public List<SubjectDto> getProfessorAllSubjects(Long professorId) {
 
         ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
-        return professorEntity.getSubjects();
+
+        return professorEntity.getSubjects().stream()
+                .map(subjectEntity ->
+                        modelMapper.map(subjectEntity, SubjectDto.class))
+                .collect(Collectors.toList());
     }
 
     public void deleteASubjectFromProfessor(Long professorId, Long subjectId) {
@@ -105,9 +111,10 @@ public class ProfessorService {
 
         }
     }
-    public ProfessorEntity getSubjectProfessor(Long subjectId) {
+    public ProfessorDto getSubjectProfessor(Long subjectId) {
 
         SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow();
-        return subjectEntity.getProfessor();
+
+        return modelMapper.map(subjectEntity.getProfessor(),ProfessorDto.class);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.controller;
 
 
+import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.service.StudentService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class ProfessorStudentController {
     }
 
     @GetMapping("/student/{studentId}/professors")
-    public List<ProfessorEntity>getAllProfessorOfAStudent(@PathVariable Long studentId){
+    public List<ProfessorDto>getAllProfessorOfAStudent(@PathVariable Long studentId){
         return studentService.getAllProfessorOfAStudent(studentId);
     }
 

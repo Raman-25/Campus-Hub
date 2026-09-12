@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.controller;
 
+import com.example.collegeManagementSystem.collage.dto.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.service.StudentService;
@@ -22,7 +23,7 @@ public class StudentSubjectController {
     }
 
     @GetMapping("/student/{studentId}/subjects")
-    public List<SubjectEntity> getAllSubjectsOfAStudent(@PathVariable Long studentId){
+    public List<SubjectDto> getAllSubjectsOfAStudent(@PathVariable Long studentId){
         return studentService.getAllSubjectsOfAStudent(studentId);
     }
 

@@ -1,6 +1,8 @@
 package com.example.collegeManagementSystem.collage.controller;
 
 
+import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
+import com.example.collegeManagementSystem.collage.dto.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
@@ -27,7 +29,7 @@ public class ProfessorSubjectController {
     }
 
     @GetMapping("/professor/{professorId}/subjects")
-    public List<SubjectEntity> getProfessorAllSubjects(@PathVariable Long professorId) {
+    public List<SubjectDto> getProfessorAllSubjects(@PathVariable Long professorId) {
       return  professorService.getProfessorAllSubjects(professorId);
     }
 
@@ -38,7 +40,7 @@ public class ProfessorSubjectController {
     }
 
     @GetMapping("/subject/{subjectId}/professor")
-    public ProfessorEntity getSubjectProfessor(@PathVariable Long subjectId){
+    public ProfessorDto getSubjectProfessor(@PathVariable Long subjectId){
          return professorService.getSubjectProfessor(subjectId);
     }
 
