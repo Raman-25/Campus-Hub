@@ -1,22 +1,25 @@
 package com.example.collegeManagementSystem.collage.service;
 
-import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
-import com.example.collegeManagementSystem.collage.dto.SubjectDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
+import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProfessorService {
+public class ProfessorService implements UserDetailsService {
 
     private final ProfessorRepository professorRepository;
     private final ModelMapper modelMapper;
@@ -116,5 +119,14 @@ public class ProfessorService {
         SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow();
 
         return modelMapper.map(subjectEntity.getProfessor(),ProfessorDto.class);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        ProfessorEntity professor = professorRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Student not found"));
+
+        return professor;
     }
 }

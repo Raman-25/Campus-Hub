@@ -1,11 +1,8 @@
-package com.example.collegeManagementSystem.collage.controller;
+package com.example.collegeManagementSystem.collage.controller.Professor;
 
 
-import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
-import com.example.collegeManagementSystem.collage.dto.SubjectDto;
-import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
-import com.example.collegeManagementSystem.collage.entity.StudentEntity;
-import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
+import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
 import com.example.collegeManagementSystem.collage.service.ProfessorService;
 import com.example.collegeManagementSystem.collage.service.StudentService;
 import lombok.RequiredArgsConstructor;

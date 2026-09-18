@@ -1,4 +1,4 @@
-package com.example.collegeManagementSystem.collage.dto;
+package com.example.collegeManagementSystem.collage.dto.Admission;
 
 import lombok.Data;
 

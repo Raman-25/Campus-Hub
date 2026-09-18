@@ -1,12 +1,11 @@
-package com.example.collegeManagementSystem.collage.controller;
+package com.example.collegeManagementSystem.collage.controller.Student;
 
 
-import com.example.collegeManagementSystem.collage.dto.AdmissionRecordDto;
-import com.example.collegeManagementSystem.collage.dto.StudentDto;
+import com.example.collegeManagementSystem.collage.dto.Admission.AdmissionRecordDto;
+import com.example.collegeManagementSystem.collage.dto.Student.StudentDto;
 import com.example.collegeManagementSystem.collage.service.AdmissionRecordService;
 import com.example.collegeManagementSystem.collage.service.StudentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

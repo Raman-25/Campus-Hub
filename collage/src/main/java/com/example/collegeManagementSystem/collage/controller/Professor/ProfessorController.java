@@ -1,6 +1,6 @@
-package com.example.collegeManagementSystem.collage.controller;
+package com.example.collegeManagementSystem.collage.controller.Professor;
 
-import com.example.collegeManagementSystem.collage.dto.ProfessorDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

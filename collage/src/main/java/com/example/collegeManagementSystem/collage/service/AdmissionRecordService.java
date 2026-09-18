@@ -1,7 +1,7 @@
 package com.example.collegeManagementSystem.collage.service;
 
-import com.example.collegeManagementSystem.collage.dto.AdmissionRecordDto;
-import com.example.collegeManagementSystem.collage.dto.NewAdmissionDto;
+import com.example.collegeManagementSystem.collage.dto.Admission.AdmissionRecordDto;
+import com.example.collegeManagementSystem.collage.dto.Admission.NewAdmissionDto;
 import com.example.collegeManagementSystem.collage.entity.AdmissionRecordEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.repository.AdmissionRecordRepository;

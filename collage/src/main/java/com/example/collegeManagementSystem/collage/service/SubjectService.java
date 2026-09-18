@@ -1,11 +1,8 @@
 package com.example.collegeManagementSystem.collage.service;
 
 
-import com.example.collegeManagementSystem.collage.dto.StudentDto;
-import com.example.collegeManagementSystem.collage.dto.SubjectDto;
-import com.example.collegeManagementSystem.collage.entity.StudentEntity;
+import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
-import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
