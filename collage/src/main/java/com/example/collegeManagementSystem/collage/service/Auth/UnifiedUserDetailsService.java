@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
+import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ public class UnifiedUserDetailsService implements UserDetailsService {
 
     private final StudentRepository studentRepository;
     private final ProfessorRepository professorRepository;
-//    private final AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -31,14 +32,11 @@ public class UnifiedUserDetailsService implements UserDetailsService {
             return professor;
         }
 
-//        // Try to find in Admin table
-//        UserDetails admin = adminRepository.findByEmail(email)
-//                .map(a -> (UserDetails) )
-//                .orElse(null);
-//
-//        if (admin != null) {
-//            return admin;
-//        }
+        // Try to find in Admin table
+        UserDetails admin = (UserDetails) adminRepository.findByEmail(email).orElse(null);
+        if (admin != null) {
+            return admin;
+        }
 
         // User not found in any table
         throw new UsernameNotFoundException("User with email '" + email + "' not found");

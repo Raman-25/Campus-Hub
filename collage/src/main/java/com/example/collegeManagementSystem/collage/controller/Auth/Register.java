@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.controller.Auth;
 
 
+import com.example.collegeManagementSystem.collage.dto.Admin.adminRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.professorRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentRegisterDto;
 import com.example.collegeManagementSystem.collage.service.Auth.RegistrationService;
@@ -30,6 +31,13 @@ public class Register {
         registrationService.registerProfessor(professor);
 
         return ResponseEntity.ok("Professor Register Successfully");
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<String> registerAdmins(@RequestBody adminRegisterDto admin){
+        registrationService.registerAdmins(admin);
+
+        return ResponseEntity.ok("Admin Register Successfully");
     }
 
 

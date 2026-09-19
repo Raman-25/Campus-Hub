@@ -2,10 +2,13 @@ package com.example.collegeManagementSystem.collage.service.Auth;
 
 
 import com.example.collegeManagementSystem.collage.Enum.Role;
+import com.example.collegeManagementSystem.collage.dto.Admin.adminRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.professorRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentRegisterDto;
+import com.example.collegeManagementSystem.collage.entity.AdminEntity;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
+import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class RegistrationService {
     private final ModelMapper modelMapper;
     private final StudentRepository studentRepository;
     private final ProfessorRepository professorRepository;
+    private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
     public void registerStudent(StudentRegisterDto student) {
@@ -46,5 +50,19 @@ public class RegistrationService {
         professorEntity.setRole(Role.PROFESSOR);
 
         professorRepository.save(professorEntity);
+    }
+
+    public void registerAdmins(adminRegisterDto admin) {
+
+        AdminEntity adminEntity = new AdminEntity();
+
+        adminEntity.setName(admin.getName());
+        adminEntity.setEmail(admin.getEmail());
+        adminEntity.setLevel(admin.getLevel());
+        adminEntity.setDepartment(admin.getDepartment());
+        adminEntity.setPassword(passwordEncoder.encode(admin.getPassword()));
+        adminEntity.setRole(Role.ADMIN);
+
+        adminRepository.save(adminEntity);
     }
 }

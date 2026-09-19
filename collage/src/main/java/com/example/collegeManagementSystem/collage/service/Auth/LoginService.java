@@ -1,9 +1,11 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
 
+import com.example.collegeManagementSystem.collage.dto.Admin.adminLoginDto;
 import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorLoginDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentLoginDto;
+import com.example.collegeManagementSystem.collage.entity.AdminEntity;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
@@ -48,5 +50,18 @@ public class LoginService {
         String RefreshToken = jwtService.generateRefreshToken(professor.getId());
 
         return  new LoginResponseDto(professor.getId(),AccessToken,RefreshToken);
+    }
+
+    public LoginResponseDto loginAdmin(adminLoginDto loginDto) {
+        Authentication authentication =  authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(),loginDto.getPassword())
+        );
+
+        AdminEntity admin = (AdminEntity) authentication.getPrincipal();
+
+        String AccessToken = jwtService.generateAccessToken(admin.getId(),admin.getEmail(), String.valueOf(admin.getRole()));
+        String RefreshToken = jwtService.generateRefreshToken(admin.getId());
+
+        return  new LoginResponseDto(admin.getId(),AccessToken,RefreshToken);
     }
 }

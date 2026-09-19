@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.controller.Auth;
 
 
+import com.example.collegeManagementSystem.collage.dto.Admin.adminLoginDto;
 import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorLoginDto;
@@ -38,6 +39,18 @@ public class Login {
     public ResponseEntity<LoginResponseDto> loginProfessor(@RequestBody ProfessorLoginDto loginDto, HttpServletResponse response){
 
         LoginResponseDto responseDto = loginService.loginProfessor(loginDto);
+
+        Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<LoginResponseDto> loginAdmin(@RequestBody adminLoginDto loginDto, HttpServletResponse response){
+
+        LoginResponseDto responseDto = loginService.loginAdmin(loginDto);
 
         Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
         cookie.setHttpOnly(true);
