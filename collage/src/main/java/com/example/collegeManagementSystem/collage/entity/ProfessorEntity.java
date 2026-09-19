@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Professor")
 
-public class ProfessorEntity implements UserDetails {
+public class ProfessorEntity extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,13 +29,6 @@ public class ProfessorEntity implements UserDetails {
 
     @Column(length = 100, nullable = false)
     private String title;
-
-    private String email;
-
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.PROFESSOR;
 
     @JsonIgnore
     @OneToMany(mappedBy = "professor")
@@ -50,18 +43,4 @@ public class ProfessorEntity implements UserDetails {
     )                                                                   //this give the owning side to the professor
     private List<StudentEntity> students = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
 }

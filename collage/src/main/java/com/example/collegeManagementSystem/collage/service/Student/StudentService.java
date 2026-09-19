@@ -1,4 +1,4 @@
-package com.example.collegeManagementSystem.collage.service;
+package com.example.collegeManagementSystem.collage.service.Student;
 
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentDto;
@@ -12,9 +12,6 @@ import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -25,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class StudentService implements UserDetailsService {
+public class StudentService {
 
     private final StudentRepository studentRepository;
     private final ModelMapper modelMapper;
@@ -35,9 +32,9 @@ public class StudentService implements UserDetailsService {
 
     public StudentDto createNewStudent(StudentDto studentDto) {
         studentDto.setId(null); //not take id as in input
-        StudentEntity studentEntity = modelMapper.map(studentDto,StudentEntity.class);
+        StudentEntity studentEntity = modelMapper.map(studentDto, StudentEntity.class);
         studentRepository.save(studentEntity);
-        return modelMapper.map(studentEntity,StudentDto.class);
+        return modelMapper.map(studentEntity, StudentDto.class);
     }
 
     public List<StudentDto> getAllStudents() {
@@ -49,21 +46,21 @@ public class StudentService implements UserDetailsService {
     }
 
     public StudentDto getStudentById(Long StudentId) {
-        StudentEntity  studentEntity = studentRepository.findById(StudentId).orElseThrow();
-        return modelMapper.map(studentEntity,StudentDto.class);
+        StudentEntity studentEntity = studentRepository.findById(StudentId).orElseThrow();
+        return modelMapper.map(studentEntity, StudentDto.class);
     }
 
-    public StudentDto updateStudentById(StudentDto studentDto,Long StudentId) {
+    public StudentDto updateStudentById(StudentDto studentDto, Long StudentId) {
 
-        StudentEntity studentEntity = modelMapper.map(studentDto,StudentEntity.class);
+        StudentEntity studentEntity = modelMapper.map(studentDto, StudentEntity.class);
         studentEntity.setId(StudentId);
         StudentEntity studentEntity1 = studentRepository.save(studentEntity);
-        return modelMapper.map(studentEntity1,StudentDto.class);
+        return modelMapper.map(studentEntity1, StudentDto.class);
 
     }
 
     public void deleteStudentById(Long StudentId) {
-        StudentEntity  studentEntity = studentRepository.findById(StudentId).orElseThrow();
+        StudentEntity studentEntity = studentRepository.findById(StudentId).orElseThrow();
         studentRepository.deleteById(StudentId);
     }
 
@@ -82,11 +79,11 @@ public class StudentService implements UserDetailsService {
 
     public List<StudentEntity> getAllStudentsOfProfessors(Long professorId) {
 
-         ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
-         return  professorEntity.getStudents();
+        ProfessorEntity professorEntity = professorRepository.findById(professorId).orElseThrow();
+        return professorEntity.getStudents();
     }
 
-    public List<ProfessorDto>getAllProfessorOfAStudent(Long studentId) {
+    public List<ProfessorDto> getAllProfessorOfAStudent(Long studentId) {
 
         StudentEntity studentEntity = studentRepository.findById(studentId).orElseThrow();
 
@@ -137,11 +134,4 @@ public class StudentService implements UserDetailsService {
         studentRepository.save(studentEntity);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-          StudentEntity student = studentRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Student not found"));
-
-        return student;
-    }
 }

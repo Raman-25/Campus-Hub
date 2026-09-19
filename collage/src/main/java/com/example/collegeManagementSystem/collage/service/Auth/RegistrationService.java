@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
 
+import com.example.collegeManagementSystem.collage.Enum.Role;
 import com.example.collegeManagementSystem.collage.dto.Professor.professorRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentRegisterDto;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
@@ -30,6 +31,7 @@ public class RegistrationService {
         studentEntity.setRollNumber(student.getRollNumber());
         studentEntity.setDepartment(student.getDepartment());
         studentEntity.setSemester(student.getSemester());
+        studentEntity.setRole(Role.STUDENT);
 
        studentRepository.save(studentEntity);
     }
@@ -40,9 +42,8 @@ public class RegistrationService {
 
         professorEntity.setTitle(professor.getTitle());
         professorEntity.setEmail(professor.getEmail());
-        professorEntity.setPassword(
-                passwordEncoder.encode(professor.getPassword())
-        );
+        professorEntity.setPassword(passwordEncoder.encode(professor.getPassword()));
+        professorEntity.setRole(Role.PROFESSOR);
 
         professorRepository.save(professorEntity);
     }

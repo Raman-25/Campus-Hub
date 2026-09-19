@@ -4,7 +4,7 @@ package com.example.collegeManagementSystem.collage.controller.Student;
 import com.example.collegeManagementSystem.collage.dto.Admission.AdmissionRecordDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentDto;
 import com.example.collegeManagementSystem.collage.service.AdmissionRecordService;
-import com.example.collegeManagementSystem.collage.service.StudentService;
+import com.example.collegeManagementSystem.collage.service.Student.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

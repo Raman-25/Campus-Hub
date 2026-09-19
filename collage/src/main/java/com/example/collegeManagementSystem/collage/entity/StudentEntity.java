@@ -18,7 +18,7 @@ import java.util.List;
 @ToString(exclude = {"professors", "subjects"})
 @NoArgsConstructor
 @Table(name = "student")
-public class StudentEntity implements UserDetails {
+public class StudentEntity extends BaseUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,14 +27,11 @@ public class StudentEntity implements UserDetails {
     @Column(length = 100, nullable = false)
     private String name;
 
-    private String email;
-    private String password;
     private String rollNumber;
-    private String department;
-    private Integer semester;
 
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.STUDENT;
+    private String department;
+
+    private Integer semester;
 
     @ManyToMany(mappedBy = "students") //inverse side
     private List<ProfessorEntity> professors = new ArrayList<>();
@@ -46,20 +43,5 @@ public class StudentEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private List<SubjectEntity> subjects;
-
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
 }
+
