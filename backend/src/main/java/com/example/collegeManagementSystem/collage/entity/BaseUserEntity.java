@@ -16,6 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class BaseUserEntity implements UserDetails {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false, unique = true)
     private String email;
 

@@ -1,6 +1,9 @@
 package com.example.collegeManagementSystem.collage.configs;
 
+import com.example.collegeManagementSystem.collage.filters.JwtAuthFilter;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSecurityConfig {
+
+    JwtAuthFilter jwtAuthFilter;
+
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -34,8 +41,8 @@ public class WebSecurityConfig {
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
-
-                );
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 

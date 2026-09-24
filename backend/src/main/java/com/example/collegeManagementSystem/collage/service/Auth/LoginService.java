@@ -6,10 +6,12 @@ import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorLoginDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentLoginDto;
 import com.example.collegeManagementSystem.collage.entity.AdminEntity;
+import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.StudentEntity;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ public class LoginService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    ModelMapper mapper;
 
 
     public LoginResponseDto loginStudent(StudentLoginDto loginDto) {
@@ -31,9 +34,8 @@ public class LoginService {
 
         StudentEntity student = (StudentEntity) authentication.getPrincipal();  //returns the authenticated user object
 
-
-        String AccessToken = jwtService.generateAccessToken(student.getId(),student.getEmail(), String.valueOf(student.getRole()));
-        String RefreshToken = jwtService.generateRefreshToken(student.getId());
+        String AccessToken = jwtService.generateAccessToken(student);
+        String RefreshToken = jwtService.generateRefreshToken(student);
 
         return  new LoginResponseDto(student.getId(),AccessToken,RefreshToken);
 
@@ -46,8 +48,8 @@ public class LoginService {
 
         ProfessorEntity professor = (ProfessorEntity) authentication.getPrincipal();
 
-        String AccessToken = jwtService.generateAccessToken(professor.getId(),professor.getEmail(), String.valueOf(professor.getRole()));
-        String RefreshToken = jwtService.generateRefreshToken(professor.getId());
+        String AccessToken = jwtService.generateAccessToken(professor);
+        String RefreshToken = jwtService.generateRefreshToken(professor);
 
         return  new LoginResponseDto(professor.getId(),AccessToken,RefreshToken);
     }
@@ -59,8 +61,8 @@ public class LoginService {
 
         AdminEntity admin = (AdminEntity) authentication.getPrincipal();
 
-        String AccessToken = jwtService.generateAccessToken(admin.getId(),admin.getEmail(), String.valueOf(admin.getRole()));
-        String RefreshToken = jwtService.generateRefreshToken(admin.getId());
+        String AccessToken = jwtService.generateAccessToken(admin);
+        String RefreshToken = jwtService.generateRefreshToken(admin);
 
         return  new LoginResponseDto(admin.getId(),AccessToken,RefreshToken);
     }

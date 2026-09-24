@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
+import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
@@ -40,5 +41,17 @@ public class UnifiedUserDetailsService implements UserDetailsService {
 
         // User not found in any table
         throw new UsernameNotFoundException("User with email '" + email + "' not found");
+    }
+
+    public BaseUserEntity loadUserByIdAndRole(Long userId, String role) {
+
+        BaseUserEntity user = null;
+        switch (role) {
+            case "STUDENT" -> user = studentRepository.findById(userId).orElseThrow();
+            case "ADMIN" -> user = adminRepository.findById(userId).orElseThrow();
+            case "PROFESSOR" -> user = professorRepository.findById(userId).orElseThrow();
+            default -> throw new UsernameNotFoundException("Unknown role in token: " + role);
+        }
+        return user;
     }
 }

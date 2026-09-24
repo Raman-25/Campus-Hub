@@ -10,10 +10,6 @@ import lombok.*;
 @Table(name = "admin")
 public class AdminEntity extends BaseUserEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(length = 100, nullable = false)
     private String name;
 
@@ -22,6 +18,5 @@ public class AdminEntity extends BaseUserEntity {
 
     @Column(nullable = false)
     private Integer level = 1; // 1 = regular admin, 2 = super admin, etc.
-
 
 }

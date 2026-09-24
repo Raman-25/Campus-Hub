@@ -1,5 +1,8 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
+import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
+import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,29 +22,61 @@ public class JwtService {
         return Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(Long id, String email, String role){
+    public String generateAccessToken(BaseUserEntity user){
 
         return Jwts.builder()
-                .subject(id.toString())
-                .claim("email", email)
-                .claim("role",role )
+                .subject(user.getId().toString())
+                .claim("email", user.getEmail())
+                .claim("role", user.getRole().toString())
+                .claim("tokenType", "ACCESS")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+ 1000*60*10))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
                 .signWith(getSecretKey())
                 .compact();
     }
 
-    public String generateRefreshToken(Long id){
+    public String generateRefreshToken(BaseUserEntity user){
 
         return Jwts.builder()
-                .subject(id.toString())
+                .subject(user.getId().toString())
+                .claim("role", user.getRole().toString())
+                .claim("tokenType", "REFRESH")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+ 1000L *60*60*24*30*6))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
                 .signWith(getSecretKey())
                 .compact();
     }
 
 
+    public Long getUserIdFromToken(String token){
+
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return Long.valueOf(claims.getSubject());
     }
+
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("role", String.class);
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("email", String.class);
+    }
+
+
+}
 
 

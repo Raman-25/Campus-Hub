@@ -23,9 +23,6 @@ import java.util.List;
 
 public class ProfessorEntity extends BaseUserEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(length = 100, nullable = false)
     private String title;

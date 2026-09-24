@@ -1,12 +1,14 @@
 package com.example.collegeManagementSystem.collage.controller.Auth;
 
 
+import com.example.collegeManagementSystem.collage.Enum.Role;
 import com.example.collegeManagementSystem.collage.dto.Admin.adminLoginDto;
 import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorLoginDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentLoginDto;
 import com.example.collegeManagementSystem.collage.service.Auth.LoginService;
+import com.example.collegeManagementSystem.collage.service.Auth.SessionService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class Login {
 
     private final LoginService loginService;
+    private final SessionService sessionService;
 
     @PostMapping("/student")
     public ResponseEntity<LoginResponseDto> loginStudent(@RequestBody StudentLoginDto loginDto, HttpServletResponse response){
 
-         LoginResponseDto responseDto = loginService.loginStudent(loginDto);
+        LoginResponseDto responseDto = loginService.loginStudent(loginDto);
 
         Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+
+        sessionService.createSession(responseDto.getRefreshToken());
 
         return ResponseEntity.ok(responseDto);
     }
@@ -44,6 +49,8 @@ public class Login {
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
 
+        sessionService.createSession(responseDto.getRefreshToken());
+
         return ResponseEntity.ok(responseDto);
     }
 
@@ -55,6 +62,8 @@ public class Login {
         Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+
+        sessionService.createSession(responseDto.getRefreshToken());
 
         return ResponseEntity.ok(responseDto);
     }
