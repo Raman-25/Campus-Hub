@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
+import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
 import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
@@ -47,9 +48,9 @@ public class UnifiedUserDetailsService implements UserDetailsService {
 
         BaseUserEntity user = null;
         switch (role) {
-            case "STUDENT" -> user = studentRepository.findById(userId).orElseThrow();
-            case "ADMIN" -> user = adminRepository.findById(userId).orElseThrow();
-            case "PROFESSOR" -> user = professorRepository.findById(userId).orElseThrow();
+            case "STUDENT" -> user = studentRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + userId));
+            case "ADMIN" -> user = adminRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Admin not found with id: " + userId));
+            case "PROFESSOR" -> user = professorRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("professor not found with id: " + userId));
             default -> throw new UsernameNotFoundException("Unknown role in token: " + role);
         }
         return user;

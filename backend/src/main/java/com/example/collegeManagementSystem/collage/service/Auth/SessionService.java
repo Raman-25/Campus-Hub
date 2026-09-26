@@ -1,8 +1,6 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
 import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
-import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
-import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.entity.SessionEntity;
 import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
@@ -10,11 +8,9 @@ import com.example.collegeManagementSystem.collage.repository.SessionRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,8 +38,6 @@ public class SessionService {
 
         Long userId = jwtService.getUserIdFromToken(refreshToken);
         String role = jwtService.getRoleFromToken(refreshToken);
-
-        BaseUserEntity user = null;
 
         switch (role) {
             case "STUDENT" -> studentRepository.findById(userId)

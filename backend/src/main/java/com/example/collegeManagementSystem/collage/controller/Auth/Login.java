@@ -1,10 +1,8 @@
 package com.example.collegeManagementSystem.collage.controller.Auth;
 
 
-import com.example.collegeManagementSystem.collage.Enum.Role;
 import com.example.collegeManagementSystem.collage.dto.Admin.adminLoginDto;
 import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
-import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorLoginDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentLoginDto;
 import com.example.collegeManagementSystem.collage.service.Auth.LoginService;
@@ -33,6 +31,7 @@ public class Login {
 
         Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         sessionService.createSession(responseDto.getRefreshToken());
@@ -47,6 +46,7 @@ public class Login {
 
         Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         sessionService.createSession(responseDto.getRefreshToken());
@@ -61,6 +61,7 @@ public class Login {
 
         Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         sessionService.createSession(responseDto.getRefreshToken());

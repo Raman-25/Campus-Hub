@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.filters;
 
+import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
 import com.example.collegeManagementSystem.collage.entity.AdminEntity;
 import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
@@ -9,6 +10,7 @@ import com.example.collegeManagementSystem.collage.repository.ProfessorRepositor
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import com.example.collegeManagementSystem.collage.service.Auth.JwtService;
 import com.example.collegeManagementSystem.collage.service.Auth.UnifiedUserDetailsService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +58,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             String token = requestTokenHeader.substring(7).trim();
+            String tokenType = jwtService.getTokenTypeFromToken(token);
+            if (!"ACCESS".equals(tokenType)) {
+                throw new JwtException("Refresh token cannot be used as access token");
+            }
             Long UserId = jwtService.getUserIdFromToken(token);
             String Role = jwtService.getRoleFromToken(token);
 
@@ -66,9 +72,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 BaseUserEntity user = null;
 
                 switch (Role) {
-                    case "STUDENT" -> user = studentRepository.findById(UserId).orElseThrow();
-                    case "ADMIN" -> user = adminRepository.findById(UserId).orElseThrow();
-                    case "PROFESSOR" -> user = professorRepository.findById(UserId).orElseThrow();
+                    case "STUDENT" -> user = studentRepository.findById(UserId).orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + UserId));
+                    case "ADMIN" -> user = adminRepository.findById(UserId).orElseThrow(() -> new ResourceNotFoundException("Admin not found with id: " + UserId));
+                    case "PROFESSOR" -> user = professorRepository.findById(UserId).orElseThrow(() -> new ResourceNotFoundException("Professor not found with id: " + UserId));
                     default -> throw new UsernameNotFoundException("Unknown role in token: " + Role);
                 }
 

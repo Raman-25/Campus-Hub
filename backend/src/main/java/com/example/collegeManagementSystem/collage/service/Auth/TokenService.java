@@ -29,8 +29,7 @@ public class TokenService {
 
         BaseUserEntity user = unifiedUserDetailsService.loadUserByIdAndRole(session.getUserId(), session.getRole());
 
-        sessionRepository.findByRefreshToken(refreshToken).ifPresent(sessionRepository::delete);
-
+        sessionRepository.delete(session);
 
         String newRefreshToken = jwtService.generateRefreshToken(user);
         sessionService.createSession(newRefreshToken);

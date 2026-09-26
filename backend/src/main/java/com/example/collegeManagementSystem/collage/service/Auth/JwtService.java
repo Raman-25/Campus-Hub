@@ -67,13 +67,13 @@ public class JwtService {
         return claims.get("role", String.class);
     }
 
-    public String getEmailFromToken(String token) {
+    public String getTokenTypeFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return claims.get("email", String.class);
+        return claims.get("tokenType", String.class);
     }
 
 
