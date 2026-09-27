@@ -5,9 +5,9 @@ import com.example.collegeManagementSystem.collage.Enum.Role;
 import com.example.collegeManagementSystem.collage.dto.Admin.adminRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.professorRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentRegisterDto;
-import com.example.collegeManagementSystem.collage.entity.AdminEntity;
-import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
-import com.example.collegeManagementSystem.collage.entity.StudentEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.AdminEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
@@ -34,7 +34,7 @@ public class RegistrationService {
         studentEntity.setPassword(passwordEncoder.encode(student.getPassword()));
         studentEntity.setRollNumber(student.getRollNumber());
         studentEntity.setDepartment(student.getDepartment());
-        studentEntity.setSemester(student.getSemester());
+        studentEntity.setYear(student.getYear());
         studentEntity.setRole(Role.STUDENT);
 
        studentRepository.save(studentEntity);
@@ -46,6 +46,7 @@ public class RegistrationService {
 
         professorEntity.setTitle(professor.getTitle());
         professorEntity.setEmail(professor.getEmail());
+        professorEntity.setDepartment(professor.getDepartment());
         professorEntity.setPassword(passwordEncoder.encode(professor.getPassword()));
         professorEntity.setRole(Role.PROFESSOR);
 
@@ -58,8 +59,6 @@ public class RegistrationService {
 
         adminEntity.setName(admin.getName());
         adminEntity.setEmail(admin.getEmail());
-        adminEntity.setLevel(admin.getLevel());
-        adminEntity.setDepartment(admin.getDepartment());
         adminEntity.setPassword(passwordEncoder.encode(admin.getPassword()));
         adminEntity.setRole(Role.ADMIN);
 

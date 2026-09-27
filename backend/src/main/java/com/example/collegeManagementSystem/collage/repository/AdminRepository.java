@@ -1,6 +1,6 @@
 package com.example.collegeManagementSystem.collage.repository;
 
-import com.example.collegeManagementSystem.collage.entity.AdminEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.AdminEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

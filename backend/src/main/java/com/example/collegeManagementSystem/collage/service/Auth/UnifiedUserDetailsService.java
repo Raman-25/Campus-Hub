@@ -1,7 +1,7 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
 import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
-import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;

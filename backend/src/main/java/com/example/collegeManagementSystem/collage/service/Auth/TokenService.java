@@ -2,7 +2,7 @@ package com.example.collegeManagementSystem.collage.service.Auth;
 
 
 import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
-import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.entity.SessionEntity;
 import com.example.collegeManagementSystem.collage.repository.SessionRepository;
 import jakarta.transaction.Transactional;

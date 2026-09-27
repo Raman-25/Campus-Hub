@@ -1,10 +1,7 @@
 package com.example.collegeManagementSystem.collage.filters;
 
 import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
-import com.example.collegeManagementSystem.collage.entity.AdminEntity;
-import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
-import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
-import com.example.collegeManagementSystem.collage.entity.StudentEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.BaseUserEntity;
 import com.example.collegeManagementSystem.collage.repository.AdminRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;

@@ -1,17 +1,12 @@
-package com.example.collegeManagementSystem.collage.entity;
+package com.example.collegeManagementSystem.collage.entity.Users;
 
-import com.example.collegeManagementSystem.collage.Enum.Role;
+import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -30,6 +25,9 @@ public class ProfessorEntity extends BaseUserEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "professor")
     private List<SubjectEntity> subjects;
+
+    @Enumerated(EnumType.STRING)
+    private Department department;
 
     @JsonIgnore
     @ManyToMany

@@ -1,16 +1,21 @@
 package com.example.collegeManagementSystem.collage.service.Student;
 
+import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentDto;
+import com.example.collegeManagementSystem.collage.dto.Student.StudentListDto;
 import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
-import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
-import com.example.collegeManagementSystem.collage.entity.StudentEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.StudentRepository;
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +64,10 @@ public class StudentService {
 
     }
 
+    @Transactional
     public void deleteStudentById(Long StudentId) {
-        StudentEntity studentEntity = studentRepository.findById(StudentId).orElseThrow();
+        StudentEntity studentEntity = studentRepository.findById(StudentId)
+                .orElseThrow(()-> new ResourceNotFoundException("Student not found with id: " + StudentId));
         studentRepository.deleteById(StudentId);
     }
 
@@ -134,4 +141,14 @@ public class StudentService {
         studentRepository.save(studentEntity);
     }
 
+    // ADMIN ROUTES
+
+    public List<StudentListDto> getByDepartmentAndYear(Department department, Integer year) {
+
+        return studentRepository.findByDepartmentAndYear(department,year)
+                .stream()
+                .map(s-> new StudentListDto(s.getId(),s.getName(),s.getRollNumber()))
+                .toList();
+
+    }
 }

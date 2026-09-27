@@ -17,8 +17,6 @@ const DEPARTMENTS = [
   'Electronics & Communication',
   'Mechanical Engineering',
   'Civil Engineering',
-  'Business Administration',
-  'Mathematics',
 ];
 
 const TITLES = ['Dr.', 'Prof.', 'Mr.', 'Mrs.', 'Ms.'];
@@ -30,7 +28,7 @@ const initialFields = {
   confirmPassword: '',
   rollNumber: '',
   department: DEPARTMENTS[0],
-  semester: '1',
+  year: '1',
   title: TITLES[0],
   adminLevel: 'Regular Admin',
   agreeToTerms: false,
@@ -57,7 +55,7 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
   const roleFieldErrors = useMemo(() => {
     if (role === 'student') return ['rollNumber'];
     if (role === 'professor') return ['title'];
-    if (role === 'admin') return ['department', 'adminLevel'];
+    if (role === 'admin') return ['adminLevel'];
     return [];
   }, [role]);
 
@@ -192,39 +190,39 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
                     options={DEPARTMENTS}
                   />
                   <SelectField
-                    label="Semester"
-                    value={fields.semester}
-                    onChange={(v) => setField('semester', v)}
-                    options={Array.from({ length: 8 }, (_, i) => String(i + 1))}
+                    label="Year"
+                    value={fields.year}
+                    onChange={(v) => setField('year', v)}
+                    options={['1', '2', '3', '4']}
                   />
                 </div>
               </>
             )}
 
             {role === 'professor' && (
-              <SelectField
-                label="Title"
-                value={fields.title}
-                onChange={(v) => setField('title', v)}
-                options={TITLES}
-              />
-            )}
-
-            {role === 'admin' && (
               <div className="grid grid-cols-2 gap-4">
+                <SelectField
+                  label="Title"
+                  value={fields.title}
+                  onChange={(v) => setField('title', v)}
+                  options={TITLES}
+                />
                 <SelectField
                   label="Department"
                   value={fields.department}
                   onChange={(v) => setField('department', v)}
                   options={DEPARTMENTS}
                 />
-                <SelectField
-                  label="Admin level"
-                  value={fields.adminLevel}
-                  onChange={(v) => setField('adminLevel', v)}
-                  options={['Regular Admin', 'Super Admin']}
-                />
               </div>
+            )}
+
+            {role === 'admin' && (
+              <SelectField
+                label="Admin level"
+                value={fields.adminLevel}
+                onChange={(v) => setField('adminLevel', v)}
+                options={['Regular Admin', 'Super Admin']}
+              />
             )}
 
             <label className="flex items-start gap-2.5 text-sm text-ink-muted">
@@ -274,12 +272,12 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
 function buildPayload(role, fields) {
   const base = { name: fields.fullName, email: fields.email, password: fields.password };
   if (role === 'student') {
-    return { ...base, rollNumber: fields.rollNumber, department: fields.department, semester: Number(fields.semester) };
+    return { ...base, rollNumber: fields.rollNumber, department: fields.department, year: Number(fields.year) };
   }
   if (role === 'professor') {
-    return { ...base, title: fields.title };
+    return { ...base, title: fields.title, department: fields.department };
   }
-  return { ...base, department: fields.department, level: fields.adminLevel };
+  return { ...base, level: fields.adminLevel };
 }
 
 function SuccessScreen({ role, onContinue }) {

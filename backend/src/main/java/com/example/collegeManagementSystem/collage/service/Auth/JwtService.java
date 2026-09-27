@@ -1,7 +1,6 @@
 package com.example.collegeManagementSystem.collage.service.Auth;
 
-import com.example.collegeManagementSystem.collage.dto.LoginResponseDto;
-import com.example.collegeManagementSystem.collage.entity.BaseUserEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.BaseUserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

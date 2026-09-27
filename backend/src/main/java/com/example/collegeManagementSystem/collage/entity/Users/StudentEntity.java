@@ -1,15 +1,12 @@
-package com.example.collegeManagementSystem.collage.entity;
+package com.example.collegeManagementSystem.collage.entity.Users;
 
 
-import com.example.collegeManagementSystem.collage.Enum.Role;
+import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -26,9 +23,10 @@ public class StudentEntity extends BaseUserEntity {
 
     private String rollNumber;
 
-    private String department;
+    @Enumerated(EnumType.STRING)
+    private Department department;
 
-    private Integer semester;
+    private Integer year;
 
     @ManyToMany(mappedBy = "students") //inverse side
     private List<ProfessorEntity> professors = new ArrayList<>();

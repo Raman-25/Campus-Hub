@@ -1,6 +1,8 @@
 package com.example.collegeManagementSystem.collage.entity;
 
 
+import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

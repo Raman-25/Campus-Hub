@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.entity;
 
+import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

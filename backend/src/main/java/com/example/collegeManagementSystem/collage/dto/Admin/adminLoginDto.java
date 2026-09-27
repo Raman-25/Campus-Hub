@@ -9,5 +9,4 @@ public class adminLoginDto {
 
     private String password;
 
-    private String department;
 }

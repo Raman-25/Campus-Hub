@@ -1,4 +1,4 @@
-package com.example.collegeManagementSystem.collage.entity;
+package com.example.collegeManagementSystem.collage.entity.Users;
 
 import com.example.collegeManagementSystem.collage.Enum.Role;
 import jakarta.persistence.*;

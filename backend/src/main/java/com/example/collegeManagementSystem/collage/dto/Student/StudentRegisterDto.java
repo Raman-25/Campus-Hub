@@ -1,5 +1,7 @@
 package com.example.collegeManagementSystem.collage.dto.Student;
 
+import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 
 @Data
@@ -9,8 +11,9 @@ public class StudentRegisterDto {
     private String email;
     private String password;
     private String rollNumber;
-    private String department;
-    private Integer semester;
+    private Department department;
+    @JsonAlias("semester")
+    private Integer year;
 
 
 }

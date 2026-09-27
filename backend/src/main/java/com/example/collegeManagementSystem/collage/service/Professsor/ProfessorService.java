@@ -1,13 +1,18 @@
 package com.example.collegeManagementSystem.collage.service.Professsor;
 
+import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorListDto;
 import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
-import com.example.collegeManagementSystem.collage.entity.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -117,4 +122,26 @@ public class ProfessorService{
         return modelMapper.map(subjectEntity.getProfessor(),ProfessorDto.class);
     }
 
+    // ADMIN ROUTES
+
+    public List<ProfessorListDto> getByDepartment(Department department) {
+
+        return professorRepository.findByDepartment(department)
+                .stream()
+                .map(p-> new ProfessorListDto(p.getId(), p.getName(), p.getEmail()))
+                .toList();
+
+    }
+    @Transactional
+    public void deleteProfessor(Long id) {
+
+        ProfessorEntity professorEntity = professorRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Professor not found with id: " + id));
+
+        // Must null the subjects first: subject.professor_id is a FK pointer.
+        professorEntity.getSubjects().forEach(subjectEntity -> subjectEntity.setProfessor(null));
+
+        professorRepository.deleteById(id);
+
+    }
 }
