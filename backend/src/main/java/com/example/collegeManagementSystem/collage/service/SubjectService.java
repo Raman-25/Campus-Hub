@@ -11,12 +11,10 @@ import com.example.collegeManagementSystem.collage.repository.ProfessorRepositor
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class SubjectService {
     }
 
     public SubjectDto getSubjectById(Long subjectId) {
-        SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow();
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectId).orElseThrow(() -> new ResourceNotFoundException("Subject with id " + subjectId + " Not Found"));
         return modelMapper.map(subjectEntity, SubjectDto.class);
     }
 
@@ -57,7 +55,7 @@ public class SubjectService {
                 .map(s -> {
                     String professorName;
                     if (s.getProfessor() != null) {
-                        professorName = s.getProfessor().getTitle();
+                        professorName = s.getProfessor().getDisplayName();
                     } else {
                         professorName = "Unassigned";
                     }
@@ -87,7 +85,7 @@ public class SubjectService {
 
         String professorName;
         if (subject.getProfessor() != null) {
-            professorName = subject.getProfessor().getTitle();
+            professorName = subject.getProfessor().getDisplayName();
         } else {
             professorName = "Unassigned";
         }

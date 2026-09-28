@@ -128,7 +128,7 @@ public class ProfessorService{
 
         return professorRepository.findByDepartment(department)
                 .stream()
-                .map(p-> new ProfessorListDto(p.getId(), p.getName(), p.getEmail()))
+                .map(p -> new ProfessorListDto(p.getId(), p.getTitle(), p.getName(), p.getEmail()))
                 .toList();
 
     }

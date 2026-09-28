@@ -18,6 +18,8 @@ import java.util.List;
 
 public class ProfessorEntity extends BaseUserEntity {
 
+    @Column(length = 100)
+    private String name;
 
     @Column(length = 100, nullable = false)
     private String title;
@@ -37,5 +39,14 @@ public class ProfessorEntity extends BaseUserEntity {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )                                                                   //this give the owning side to the professor
     private List<StudentEntity> students = new ArrayList<>();
+
+
+    public String getDisplayName() {
+        if (name == null || name.isBlank()) {
+            return title;
+        } else {
+            return title + " " + name;
+        }
+    }
 
 }

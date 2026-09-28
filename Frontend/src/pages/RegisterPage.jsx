@@ -30,7 +30,6 @@ const initialFields = {
   department: DEPARTMENTS[0],
   year: '1',
   title: TITLES[0],
-  adminLevel: 'Regular Admin',
   agreeToTerms: false,
 };
 
@@ -55,7 +54,6 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
   const roleFieldErrors = useMemo(() => {
     if (role === 'student') return ['rollNumber'];
     if (role === 'professor') return ['title'];
-    if (role === 'admin') return ['adminLevel'];
     return [];
   }, [role]);
 
@@ -126,6 +124,7 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
 
             <FormInput
               label="Full name"
+              name="name"
               value={fields.fullName}
               onChange={(e) => setField('fullName', e.target.value)}
               error={errors.fullName}
@@ -203,26 +202,19 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
               <div className="grid grid-cols-2 gap-4">
                 <SelectField
                   label="Title"
+                  name="title"
                   value={fields.title}
                   onChange={(v) => setField('title', v)}
                   options={TITLES}
                 />
                 <SelectField
                   label="Department"
+                  name="department"
                   value={fields.department}
                   onChange={(v) => setField('department', v)}
                   options={DEPARTMENTS}
                 />
               </div>
-            )}
-
-            {role === 'admin' && (
-              <SelectField
-                label="Admin level"
-                value={fields.adminLevel}
-                onChange={(v) => setField('adminLevel', v)}
-                options={['Regular Admin', 'Super Admin']}
-              />
             )}
 
             <label className="flex items-start gap-2.5 text-sm text-ink-muted">
@@ -270,14 +262,30 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
 }
 
 function buildPayload(role, fields) {
-  const base = { name: fields.fullName, email: fields.email, password: fields.password };
   if (role === 'student') {
-    return { ...base, rollNumber: fields.rollNumber, department: fields.department, year: Number(fields.year) };
+    return {
+      name: fields.fullName.trim(),
+      email: fields.email.trim(),
+      password: fields.password,
+      rollNumber: fields.rollNumber.trim(),
+      department: fields.department,
+      year: Number(fields.year),
+    };
   }
   if (role === 'professor') {
-    return { ...base, title: fields.title, department: fields.department };
+    return {
+      name: fields.fullName.trim(),
+      title: fields.title.trim(),
+      email: fields.email.trim(),
+      password: fields.password,
+      department: fields.department,
+    };
   }
-  return { ...base, level: fields.adminLevel };
+  return {
+    name: fields.fullName.trim(),
+    email: fields.email.trim(),
+    password: fields.password,
+  };
 }
 
 function SuccessScreen({ role, onContinue }) {
@@ -310,11 +318,12 @@ function SuccessScreen({ role, onContinue }) {
   );
 }
 
-function SelectField({ label, value, onChange, options }) {
+function SelectField({ label, name, value, onChange, options }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-ink dark:text-slate-200">{label}</label>
       <select
+        name={name}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-ink dark:text-slate-100 focus:outline-none focus:border-primary"

@@ -30,7 +30,7 @@ public class SubjectController {
     }
 
     @GetMapping("/{subjectId}")
-    public SubjectDto getSubjectById(@PathVariable(name = "SubjectId") Long subjectId) {
+    public SubjectDto getSubjectById(@PathVariable(name = "subjectId") Long subjectId) {
         return subjectService.getSubjectById(subjectId);
     }
     @PutMapping("/{subjectId}")

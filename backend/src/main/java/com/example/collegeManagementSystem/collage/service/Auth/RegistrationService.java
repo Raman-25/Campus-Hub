@@ -44,6 +44,7 @@ public class RegistrationService {
 
         ProfessorEntity professorEntity = new ProfessorEntity();
 
+        professorEntity.setName(professor.getName());
         professorEntity.setTitle(professor.getTitle());
         professorEntity.setEmail(professor.getEmail());
         professorEntity.setDepartment(professor.getDepartment());
