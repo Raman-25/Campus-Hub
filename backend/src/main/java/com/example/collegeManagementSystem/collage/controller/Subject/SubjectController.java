@@ -1,16 +1,19 @@
 package com.example.collegeManagementSystem.collage.controller.Subject;
 
 
+import com.example.collegeManagementSystem.collage.Enum.Department;
 import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
+import com.example.collegeManagementSystem.collage.dto.Subject.SubjectListDto;
 import com.example.collegeManagementSystem.collage.service.SubjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/subject")
+@RequestMapping(path = "/admin/subject")
 public class SubjectController {
 
     private final SubjectService subjectService;
@@ -20,27 +23,38 @@ public class SubjectController {
         return subjectService.createNewSubject(subjectDto);
     }
 
-    @GetMapping
-    public List<SubjectDto> getAllSubjects() {
-        return subjectService.getAllSubjects();
+    @DeleteMapping("/{subjectId}")
+    public ResponseEntity<Void> deleteSubjectById(@PathVariable Long subjectId) {
+        subjectService.deleteSubjectById(subjectId);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("{SubjectId}")
-    public SubjectDto getSubjectById(@PathVariable(name = "SubjectId") Long SubjectId) {
-        return subjectService.getSubjectById(SubjectId);
+    @GetMapping("/{subjectId}")
+    public SubjectDto getSubjectById(@PathVariable(name = "SubjectId") Long subjectId) {
+        return subjectService.getSubjectById(subjectId);
     }
-
-    @PutMapping("/{SubjectId}")
+    @PutMapping("/{subjectId}")
     public SubjectDto updateSubjectById(
-            @PathVariable Long SubjectId,
+            @PathVariable Long subjectId,
             @RequestBody SubjectDto subjectDto) {
-
-        return subjectService.updateSubjectById(subjectDto, SubjectId);
+        return subjectService.updateSubjectById(subjectDto, subjectId);
     }
 
-    @DeleteMapping("/{SubjectId}")
-    public void deleteSubjectById(@PathVariable(name = "SubjectId") Long SubjectId) {
-        subjectService.deleteSubjectById(SubjectId);
+    @GetMapping(params = {"department", "year"})
+    public ResponseEntity<List<SubjectListDto>> getSubjectsByDepartmentAndYear(
+            @RequestParam Department department,
+            @RequestParam Integer year) {
+        return ResponseEntity.ok(subjectService.getSubjectsByDepartmentAndYear(department, year));
+    }
+
+    @DeleteMapping("/{subjectId}/assign")
+    public ResponseEntity<SubjectListDto> unassignProfessor(@PathVariable Long subjectId) {
+        return ResponseEntity.ok(subjectService.unassignProfessor(subjectId));
+    }
+
+    @PutMapping("/{subjectId}/assign")
+    public ResponseEntity<SubjectListDto> assignSubjectToProfessor(@PathVariable Long subjectId,@RequestParam Long professorId){
+        return ResponseEntity.ok(subjectService.assignSubjectToProfessor(subjectId,professorId));
     }
 
 }

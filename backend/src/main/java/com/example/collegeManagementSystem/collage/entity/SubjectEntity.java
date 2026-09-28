@@ -1,6 +1,7 @@
 package com.example.collegeManagementSystem.collage.entity;
 
 
+import com.example.collegeManagementSystem.collage.Enum.Department;
 import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,6 +25,11 @@ public class SubjectEntity {
     @Column(length = 100, nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
+    private Department department;
+
+    private Integer year;
+
     @JsonIgnore //when we get subject entity we may get this to ignore this added the ignore
     @ManyToOne
     @JoinColumn(name = "professor_id")
@@ -32,4 +38,6 @@ public class SubjectEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "subjects")
     private List<StudentEntity> students;  //mapped by give the inverse side
+
+
 }

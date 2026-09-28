@@ -1,12 +1,13 @@
 package com.example.collegeManagementSystem.collage.dto.Subject;
 
 import com.example.collegeManagementSystem.collage.Enum.Department;
-import lombok.Data;
+import lombok.*;
 
 @Data
-public class SubjectDto {
-
+@AllArgsConstructor
+@NoArgsConstructor
+public class SubjectListDto {
+    private Long id;
     private String title;
-    private Department department;
-    private Integer year;
+    private String professorName;
 }
