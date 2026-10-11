@@ -13,4 +13,7 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
 
     List<StudentEntity>findByDepartmentAndYear(Department department, Integer year);
 
+    long countByDepartmentAndYear(Department department, Integer year);
+
+
 }

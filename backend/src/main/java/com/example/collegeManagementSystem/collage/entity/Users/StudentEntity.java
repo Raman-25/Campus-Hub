@@ -2,6 +2,7 @@ package com.example.collegeManagementSystem.collage.entity.Users;
 
 
 import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.example.collegeManagementSystem.collage.Enum.Grade;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import jakarta.persistence.*;
 import lombok.*;

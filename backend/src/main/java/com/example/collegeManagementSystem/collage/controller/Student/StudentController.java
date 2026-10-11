@@ -3,7 +3,6 @@ package com.example.collegeManagementSystem.collage.controller.Student;
 
 import com.example.collegeManagementSystem.collage.dto.Admission.AdmissionRecordDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentDto;
-import com.example.collegeManagementSystem.collage.service.AdmissionRecordService;
 import com.example.collegeManagementSystem.collage.service.Student.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
-    private final AdmissionRecordService admissionRecordService;
 
     @PostMapping
     public StudentDto createNewStudent(@RequestBody StudentDto studentDto) {
@@ -44,13 +42,6 @@ public class StudentController {
     @DeleteMapping("/{StudentId}")
     public void deleteStudentById(@PathVariable(name = "StudentId") Long StudentId) {
         studentService.deleteStudentById(StudentId);
-    }
-
-    //MAPPED API
-
-    @PostMapping("/{id}/admission-record")
-    public AdmissionRecordDto createNewAdmissionRecordByStudentID(@PathVariable Long id, @RequestBody AdmissionRecordDto admissionRecordDto){
-        return admissionRecordService.createNewAdmissionRecordByStudentID(id,admissionRecordDto);
     }
 
 

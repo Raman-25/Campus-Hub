@@ -16,7 +16,6 @@ import java.util.List;
 public class ProfessorSubjectController {
 
      private final ProfessorService professorService;
-     private final StudentService studentService;
 
 
     @PostMapping("/professor/{professorId}/subject/{subjectId}") //to assign a professor with id a subject with subject id

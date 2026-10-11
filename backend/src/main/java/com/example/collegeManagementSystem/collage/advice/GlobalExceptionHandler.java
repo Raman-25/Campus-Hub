@@ -2,9 +2,11 @@ package com.example.collegeManagementSystem.collage.advice;
 
 import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
 import io.jsonwebtoken.JwtException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +39,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<ApiError>> handleAuthServiceException(AuthorizationServiceException ex) {
         ApiError apiError = new ApiError("Refresh token not found, please login again", HttpStatus.UNAUTHORIZED);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(apiError));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handleDuplicateEmail(DataIntegrityViolationException ex) {
+        ApiError apiError = new ApiError("Email already registered", HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(apiError));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handleBadCredentials(BadCredentialsException ex) {
+        ApiError apiError = new ApiError("Invalid email or password", HttpStatus.UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(apiError));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handleBadRequest(IllegalArgumentException ex) {
+        ApiError apiError = new ApiError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(apiError));
     }
 
 

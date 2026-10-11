@@ -78,6 +78,7 @@ export async function apiRequest(endpoint, options = {}) {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers,
+     credentials: "include",
   });
 
   // 1. Handle HTTP 204 No Content
@@ -243,6 +244,40 @@ export const adminApi = {
   unassignProfessor(subjectId) {
     return apiRequest(`/admin/subject/${subjectId}/assign`, {
       method: 'DELETE',
+    });
+  },
+};
+
+// -------------------------------------------------------------
+// Professor Endpoints
+// -------------------------------------------------------------
+
+export const professorApi = {
+  // My subjects: GET /professor/subjects
+  getSubjects() {
+    return apiRequest('/professor/subjects');
+  },
+
+  // Subject students: GET /professor/subjects/{subjectId}/students
+  getStudents(subjectId) {
+    return apiRequest(`/professor/subjects/${subjectId}/students`);
+  },
+
+  // Mark attendance: POST /professor/attendance
+  // body: { subjectId, date, records: [{ studentId, present }] }
+  markAttendance(payload) {
+    return apiRequest('/professor/attendance', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  // Enter grades: POST /professor/grades
+  // body: { subjectId, grades: [{ studentId, grade }] }
+  enterGrades(payload) {
+    return apiRequest('/professor/grades', {
+      method: 'POST',
+      body: JSON.stringify(payload),
     });
   },
 };

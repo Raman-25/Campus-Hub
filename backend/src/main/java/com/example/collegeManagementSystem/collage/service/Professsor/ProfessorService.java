@@ -1,30 +1,48 @@
 package com.example.collegeManagementSystem.collage.service.Professsor;
 
 import com.example.collegeManagementSystem.collage.Enum.Department;
+import com.example.collegeManagementSystem.collage.Enum.Grade;
 import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorListDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorStudentDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorSubjectDto;
 import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
+import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceEntity;
+import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceMarkRequest;
+import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceRecordDto;
+import com.example.collegeManagementSystem.collage.entity.GradeEntity;
+import com.example.collegeManagementSystem.collage.entity.Grades.GradeMarkRequest;
+import com.example.collegeManagementSystem.collage.entity.Grades.GradeRecordDto;
 import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
-import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
-import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
+import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
+import com.example.collegeManagementSystem.collage.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProfessorService{
 
     private final ProfessorRepository professorRepository;
     private final ModelMapper modelMapper;
     private final SubjectRepository subjectRepository;
+    private final StudentRepository studentRepository;
+    private final GradeRepository gradeRepository;
+    private final AttendanceRepository attendanceRepository;
+
 
     public ProfessorDto createNewProfessor(ProfessorDto professorDto) {
 
@@ -128,7 +146,7 @@ public class ProfessorService{
 
         return professorRepository.findByDepartment(department)
                 .stream()
-                .map(p -> new ProfessorListDto(p.getId(), p.getTitle(), p.getName(), p.getEmail()))
+                .map(p -> new ProfessorListDto(p.getId(),p.getName(), p.getTitle(), p.getEmail()))
                 .toList();
 
     }
@@ -144,4 +162,119 @@ public class ProfessorService{
         professorRepository.deleteById(id);
 
     }
+
+    //Professor-Routes
+
+    public List<ProfessorStudentDto> getStudentsBySubject(Long subjectId) {
+
+        Long professorId = getLoggedInProfessorId();
+        SubjectEntity subject = getOwnedSubject(subjectId,professorId);
+
+        List<StudentEntity> studentEntity = studentRepository.findByDepartmentAndYear(subject.getDepartment(),subject.getYear());
+
+        return studentEntity.stream()
+                .map(s-> {
+                    Grade grade = gradeRepository.findByStudentAndSubject(s,subject)
+                            .map(GradeEntity::getGrade)
+                            .orElse(null);
+
+
+                    long total = attendanceRepository.countByStudentAndSubject(s,subject);
+                    Integer attendance = null;
+                    if(total>0){
+                        long presentDays = attendanceRepository.countByStudentAndSubjectAndPresentTrue(s, subject);
+                        attendance = (int) Math.round(presentDays * 100.0 / total);
+                    }
+
+                  return new ProfessorStudentDto(
+                            s.getId(),
+                            s.getName(),
+                            s.getRollNumber(),
+                            attendance,
+                            grade);
+                })
+                .toList();
+    }
+
+    public void markAttendanceByDate(AttendanceMarkRequest request) {
+
+        Long professorId = getLoggedInProfessorId();
+        SubjectEntity subject = getOwnedSubject(request.getSubjectId(), professorId);
+
+        if (request.getDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Cannot mark attendance for a future date");
+        }
+
+            for (AttendanceRecordDto record : request.getRecords()) {
+            StudentEntity student = studentRepository.findById(record.getStudentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+            AttendanceEntity attendance = attendanceRepository.findByStudentAndSubjectAndDate(student, subject,request.getDate()).
+                    orElseGet(()->{
+                        AttendanceEntity a = new AttendanceEntity();
+                        a.setDate(request.getDate());
+                        a.setSubject(subject);
+                        a.setStudent(student);
+                        return a;
+                    });
+
+            attendance.setPresent(record.isPresent());
+            attendanceRepository.save(attendance);
+
+        }
+    }
+
+    public void setGrade(GradeMarkRequest request) {
+
+        Long professorId = getLoggedInProfessorId();
+        SubjectEntity subject = getOwnedSubject(request.getSubjectId(), professorId);
+
+        for (GradeRecordDto record : request.getGrades()) {
+            StudentEntity student = studentRepository.findById(record.getStudentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
+
+            GradeEntity grade = gradeRepository.findByStudentAndSubject(student,subject)
+                    .orElseGet(()->{
+                        GradeEntity g = new GradeEntity();
+                        g.setSubject(subject);
+                        g.setStudent(student);
+                        return g;
+                    });
+
+            grade.setGrade(record.getGrade());
+            gradeRepository.save(grade);
+        }
+    }
+
+
+    public List<ProfessorSubjectDto> getMySubjects() {
+        Long professorId = getLoggedInProfessorId();
+        return subjectRepository.findByProfessorId(professorId).stream()
+                .map(s-> {
+                    long studentCount = studentRepository.countByDepartmentAndYear(s.getDepartment(), s.getYear());
+                    LocalDate lastMarked = attendanceRepository.findTopBySubjectOrderByDateDesc(s)
+                            .map(AttendanceEntity::getDate)
+                            .orElse(null);
+                    return new ProfessorSubjectDto(s.getId(), s.getTitle(), s.getYear(), studentCount, lastMarked);
+                })
+                .toList();
+    }
+
+
+
+    //CHECK IF THE PROFESSOR IS ASSIGNED TO THAT SUBJECT OR NOT
+    private SubjectEntity getOwnedSubject(Long subjectId, Long professorId) {
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+        if (subject.getProfessor() == null || !subject.getProfessor().getId().equals(professorId)) {
+            throw new AccessDeniedException("You are not assigned to this subject");
+        }
+        return subject;
+    }
+    private Long getLoggedInProfessorId() {
+        return ((ProfessorEntity) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()).getId();
+    }
+
+
 }

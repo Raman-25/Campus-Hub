@@ -55,15 +55,13 @@ public class SubjectService {
                 .map(s -> {
                     String professorName;
                     if (s.getProfessor() != null) {
-                        professorName = s.getProfessor().getDisplayName();
+                        professorName = s.getProfessor().getDisplayName(); //joining title+name
                     } else {
                         professorName = "Unassigned";
                     }
                     return new SubjectListDto(s.getId(), s.getTitle(), professorName);
                 })
                 .toList();
-
-
     }
 
 
