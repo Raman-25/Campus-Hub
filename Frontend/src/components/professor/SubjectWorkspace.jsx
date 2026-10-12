@@ -9,7 +9,6 @@ const TABS = [
 
 const GRADE_OPTIONS = ['A', 'B', 'C', 'D', 'F'];
 
-/** Returns today's date as YYYY-MM-DD (local time) */
 function todayString() {
   const d = new Date();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -17,7 +16,6 @@ function todayString() {
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
-/** Thin progress bar used for attendance % */
 function AttendanceBar({ value }) {
   if (value == null) return <span className="text-ink-faint dark:text-slate-500">—</span>;
   const pct = Math.min(100, Math.max(0, value));
@@ -35,7 +33,6 @@ function AttendanceBar({ value }) {
   );
 }
 
-/** Letter-grade badge */
 function GradeBadge({ grade }) {
   if (!grade) return <span className="text-ink-faint dark:text-slate-500">—</span>;
   const colors = {
@@ -52,12 +49,6 @@ function GradeBadge({ grade }) {
   );
 }
 
-/**
- * Status badge for per-day view:
- *   present === true  → green "Present"
- *   present === false → red "Absent"
- *   present === null  → grey "Not marked"
- */
 function StatusBadge({ present }) {
   if (present === true)
     return (
@@ -78,7 +69,6 @@ function StatusBadge({ present }) {
   );
 }
 
-/** Skeleton row */
 function SkeletonRow({ cols }) {
   return (
     <tr className="animate-pulse">
@@ -91,7 +81,6 @@ function SkeletonRow({ cols }) {
   );
 }
 
-/** Empty-state block */
 function EmptyState({ message }) {
   return (
     <tr>
@@ -112,64 +101,44 @@ function EmptyState({ message }) {
   );
 }
 
-/**
- * SubjectWorkspace
- * Props:
- *   subject  { id, title, year, studentCount, lastMarkedDate }
- *   onBack   () => void
- *   onToast  ({ type, message }) => void
- */
 export default function SubjectWorkspace({ subject, onBack, onToast }) {
   const [activeTab, setActiveTab] = useState('records');
   const [selectedDate, setSelectedDate] = useState(todayString());
 
-  // Student list (shared across all tabs, re-fetched after saves)
   const [students, setStudents] = useState([]);
   const [studentsLoading, setStudentsLoading] = useState(false);
   const [studentsError, setStudentsError] = useState('');
 
-  // ── View Records: Overall vs By-date toggle ───────────────────
-  const [recordsView, setRecordsView] = useState('overall'); // 'overall' | 'bydate'
+  const [recordsView, setRecordsView] = useState('overall');
   const [recordsDate, setRecordsDate] = useState(todayString());
-  const [dateRecords, setDateRecords] = useState([]);      // [{ name, rollNumber, present }]
+  const [dateRecords, setDateRecords] = useState([]);
   const [dateRecordsLoading, setDateRecordsLoading] = useState(false);
   const [dateRecordsError, setDateRecordsError] = useState('');
 
-  // Attendance tab: map of studentId → boolean (checked = present)
   const [presentMap, setPresentMap] = useState({});
   const [attendanceSaving, setAttendanceSaving] = useState(false);
   const [attendanceDateLoading, setAttendanceDateLoading] = useState(false);
 
-  // Grades tab: map of studentId → grade string (or '')
   const [gradeMap, setGradeMap] = useState({});
   const [gradesSaving, setGradesSaving] = useState(false);
 
-  // Keep a stable ref to onToast so fetchStudents useCallback dep stays [subject.id] only.
-  // This prevents fetchStudents from being recreated on every render when the parent
-  // re-renders after a toast fires, which would retrigger the useEffect and race with
-  // the explicit post-save fetch.
+  // Stable ref so fetchStudents' useCallback dep stays [subject.id] only,
+  // avoiding a re-fetch loop when the parent re-renders after a toast.
   const onToastRef = React.useRef(onToast);
   React.useEffect(() => { onToastRef.current = onToast; }, [onToast]);
 
-  // ── Fetch students ────────────────────────────────────────────
   const fetchStudents = useCallback(async () => {
     setStudentsLoading(true);
     setStudentsError('');
     try {
       const data = await professorApi.getStudents(subject.id);
       const list = Array.isArray(data) ? data : [];
-
-      // DEBUG: expose exactly what the backend sends back after a save
-      console.log('[SubjectWorkspace] fetchStudents response:', list);
-
       setStudents(list);
-
-      // Seed local maps from server values so dropdowns and checkboxes reflect DB state
       const pm = {};
       const gm = {};
       list.forEach((s) => {
-        pm[s.studentId] = true;         // attendance checkboxes default to present
-        gm[s.studentId] = s.grade ?? ''; // pre-select saved grade ('' if none)
+        pm[s.studentId] = true;
+        gm[s.studentId] = s.grade ?? '';
       });
       setPresentMap(pm);
       setGradeMap(gm);
@@ -180,13 +149,12 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
     } finally {
       setStudentsLoading(false);
     }
-  }, [subject.id]); // onToast intentionally omitted — accessed via stable ref above
+  }, [subject.id]);
 
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents]);
 
-  // ── Fetch per-day records (View Records → By-date) ────────────
   const fetchDateRecords = useCallback(async (date) => {
     setDateRecordsLoading(true);
     setDateRecordsError('');
@@ -202,14 +170,12 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
     }
   }, [subject.id]);
 
-  // When the records view switches to "bydate", auto-load for the current recordsDate
   useEffect(() => {
     if (recordsView === 'bydate') {
       fetchDateRecords(recordsDate);
     }
   }, [recordsView, recordsDate, fetchDateRecords]);
 
-  // ── Fetch per-day attendance for pre-fill (Mark Attendance tab) ──
   const prefillAttendanceForDate = useCallback(async (date) => {
     setAttendanceDateLoading(true);
     try {
@@ -217,7 +183,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
       const list = Array.isArray(data) ? data : [];
 
       if (list.length === 0) {
-        // No records for this date → default all to checked (present)
         setPresentMap((prev) => {
           const pm = {};
           Object.keys(prev).forEach((id) => { pm[id] = true; });
@@ -226,8 +191,7 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
         return;
       }
 
-      // Build a rollNumber→present lookup from the date response
-      // Then match against our students list (which has studentId + rollNumber)
+      // date response uses rollNumber as key; match against students list which has studentId
       const byRoll = {};
       list.forEach((r) => { byRoll[r.rollNumber] = r.present; });
 
@@ -235,20 +199,19 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
         const pm = {};
         prevStudents.forEach((s) => {
           const serverPresent = byRoll[s.rollNumber];
-          // null (not marked) → default to checked
+          // null means not yet marked — default to checked
           pm[s.studentId] = serverPresent === null || serverPresent === undefined ? true : serverPresent;
         });
         setPresentMap(pm);
-        return prevStudents; // students list unchanged
+        return prevStudents;
       });
     } catch {
-      // On error keep current presentMap — don't disrupt the professor
+      // keep current presentMap on error
     } finally {
       setAttendanceDateLoading(false);
     }
   }, [subject.id]);
 
-  // Pre-fill whenever the date picker changes on the attendance tab
   useEffect(() => {
     if (activeTab === 'attendance') {
       prefillAttendanceForDate(selectedDate);
@@ -256,7 +219,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, activeTab]);
 
-  // ── Save Attendance ───────────────────────────────────────────
   async function handleSaveAttendance() {
     setAttendanceSaving(true);
     let postOk = false;
@@ -265,11 +227,7 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
         studentId: s.studentId,
         present: !!presentMap[s.studentId],
       }));
-      await professorApi.markAttendance({
-        subjectId: subject.id,
-        date: selectedDate,
-        records,
-      });
+      await professorApi.markAttendance({ subjectId: subject.id, date: selectedDate, records });
       postOk = true;
       onToast?.({ type: 'success', message: 'Attendance saved.' });
     } catch (err) {
@@ -277,26 +235,21 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
     } finally {
       setAttendanceSaving(false);
     }
-    // Re-fetch OUTSIDE the try-catch so a fetch error is never confused with a POST error.
-    // Only re-fetch when POST actually succeeded.
+    // Re-fetch outside try-catch so a fetch failure isn't swallowed by the POST handler
     if (postOk) {
       await fetchStudents();
     }
   }
 
-  // ── Save Grades ───────────────────────────────────────────────
   async function handleSaveGrades() {
     const grades = students
-      .filter((s) => gradeMap[s.studentId]) // only rows where professor picked a grade
+      .filter((s) => gradeMap[s.studentId])
       .map((s) => ({ studentId: s.studentId, grade: gradeMap[s.studentId] }));
 
     if (grades.length === 0) {
       onToast?.({ type: 'error', message: 'Select at least one grade before saving.' });
       return;
     }
-
-    // DEBUG: log what we are about to POST — must be a non-empty array
-    console.log('[SubjectWorkspace] POST /professor/grades payload:', { subjectId: subject.id, grades });
 
     setGradesSaving(true);
     let postOk = false;
@@ -309,15 +262,11 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
     } finally {
       setGradesSaving(false);
     }
-    // Re-fetch OUTSIDE the try-catch so any fetch failure produces a visible error toast
-    // rather than being silently swallowed inside the POST error handler.
-    // Only re-fetch when POST actually succeeded.
     if (postOk) {
       await fetchStudents();
     }
   }
 
-  // ── Class stats (View Records tab) ───────────────────────────
   const nonNullAttendance = students.filter((s) => s.attendance != null);
   const avgAttendance =
     nonNullAttendance.length > 0
@@ -325,10 +274,8 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
       : null;
   const gradedCount = students.filter((s) => s.grade != null).length;
 
-  // ── Render ────────────────────────────────────────────────────
   return (
     <div className="animate-riseIn">
-      {/* Breadcrumb + Back */}
       <div className="flex items-center gap-3 mb-6">
         <button
           type="button"
@@ -350,9 +297,7 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
         </nav>
       </div>
 
-      {/* Container panel */}
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-        {/* Date picker row — only shown on the Mark Attendance tab */}
         {activeTab === 'attendance' && (
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-800">
             <label htmlFor="subject-date" className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-slate-400 shrink-0">
@@ -374,7 +319,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
           </div>
         )}
 
-        {/* Tab selector */}
         <div className="px-5 pt-4 pb-0">
           <div
             role="tablist"
@@ -403,12 +347,9 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
           </div>
         </div>
 
-        {/* Tab content */}
         <div className="p-5">
-          {/* ── Tab: View Records ── */}
           {activeTab === 'records' && (
             <div>
-              {/* Stats strip — only in overall view */}
               {recordsView === 'overall' && !studentsLoading && students.length > 0 && (
                 <div className="grid grid-cols-3 gap-3 mb-5">
                   <StatChip label="Total Students" value={students.length} />
@@ -423,7 +364,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
                 </div>
               )}
 
-              {/* Overall / By-date toggle */}
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-slate-400 shrink-0">
                   View:
@@ -454,7 +394,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
                   ))}
                 </div>
 
-                {/* Date picker — only visible in by-date mode */}
                 {recordsView === 'bydate' && (
                   <input
                     type="date"
@@ -467,7 +406,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
                 )}
               </div>
 
-              {/* ── Overall table ── */}
               {recordsView === 'overall' && (
                 <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                   <table className="w-full text-left border-collapse">
@@ -523,7 +461,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
                 </div>
               )}
 
-              {/* ── By-date table ── */}
               {recordsView === 'bydate' && (
                 <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                   <table className="w-full text-left border-collapse">
@@ -583,7 +520,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
             </div>
           )}
 
-          {/* ── Tab: Mark Attendance ── */}
           {activeTab === 'attendance' && (
             <div>
               <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -672,7 +608,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
             </div>
           )}
 
-          {/* ── Tab: Enter Grades ── */}
           {activeTab === 'grades' && (
             <div>
               <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -716,7 +651,6 @@ export default function SubjectWorkspace({ subject, onBack, onToast }) {
                             </div>
                           </td>
                           <td className="px-5 py-3.5">
-                            {/* Reads from students[] which is refreshed by fetchStudents after save */}
                             <GradeBadge grade={s.grade} />
                           </td>
                           <td className="px-5 py-3.5">

@@ -24,42 +24,35 @@ export default function AdminDashboard({
   onToggleDarkMode,
   onToast,
 }) {
-  // Current filters
   const [selectedDepartment, setSelectedDepartment] = useState('COMPUTER_SCIENCE');
   const [selectedYear, setSelectedYear] = useState(1);
-  const [activeTab, setActiveTab] = useState('students'); // 'students' | 'professors' | 'subjects'
+  const [activeTab, setActiveTab] = useState('students');
 
-  // Data lists
   const [students, setStudents] = useState([]);
   const [professors, setProfessors] = useState([]);
   const [subjects, setSubjects] = useState([]);
 
-  // Loading states
   const [studentsLoading, setStudentsLoading] = useState(false);
   const [professorsLoading, setProfessorsLoading] = useState(false);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
 
-  // Errors for tabs
   const [studentsError, setStudentsError] = useState('');
   const [professorsError, setProfessorsError] = useState('');
   const [subjectsError, setSubjectsError] = useState('');
 
-  // Modals state
   const [assignModal, setAssignModal] = useState({ isOpen: false, subject: null });
   const [isCreateSubjectOpen, setIsCreateSubjectOpen] = useState(false);
   const [editSubjectModal, setEditSubjectModal] = useState({ isOpen: false, subject: null });
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
-    type: 'student', // 'student' | 'professor' | 'subject'
+    type: 'student',
     item: null,
     loading: false,
   });
 
-  // Current human-readable labels
   const departmentName = getDepartmentName(selectedDepartment);
   const yearLabel = getYearLabel(selectedYear);
 
-  // Global listener for non-401 API errors (400, 404, 500) to ensure toast notification
   useEffect(() => {
     function handleApiError(e) {
       if (e.detail?.status !== 401 && e.detail?.message) {
@@ -70,10 +63,6 @@ export default function AdminDashboard({
     return () => window.removeEventListener('campus-hub:api-error', handleApiError);
   }, [onToast]);
 
-  // -------------------------------------------------------------
-  // Data Fetching Functions
-  // -------------------------------------------------------------
-
   const fetchStudents = useCallback(async (deptCode, yr) => {
     setStudentsLoading(true);
     setStudentsError('');
@@ -81,7 +70,6 @@ export default function AdminDashboard({
       const data = await adminApi.getStudents(deptCode, yr);
       setStudents(Array.isArray(data) ? data : []);
     } catch (err) {
-      // 401 is caught by api service; for 400/404/500 show server message
       const msg = extractErrorMessage(err, 'Failed to fetch students.');
       setStudentsError(msg);
       onToast?.({ type: 'error', message: msg });
@@ -131,7 +119,6 @@ export default function AdminDashboard({
     }
   }, [selectedDepartment, selectedYear, activeTab, fetchStudents, fetchProfessors, fetchSubjects]);
 
-  // Tab switch handler
   function handleTabChange(tabId) {
     setActiveTab(tabId);
     if (tabId === 'students') {
@@ -142,10 +129,6 @@ export default function AdminDashboard({
       fetchSubjects(selectedDepartment, selectedYear);
     }
   }
-
-  // -------------------------------------------------------------
-  // Assign & Unassign Flow
-  // -------------------------------------------------------------
 
   function handleAssignRequest(subject) {
     setAssignModal({ isOpen: true, subject });
@@ -179,12 +162,7 @@ export default function AdminDashboard({
     }
   }
 
-  // -------------------------------------------------------------
-  // Create & Update Subject Flow
-  // -------------------------------------------------------------
-
   function handleCreateSubjectSuccess(newSubject) {
-    // If newly created subject matches current department and year filter, add to table
     const deptMatch =
       newSubject.department === departmentName ||
       newSubject.department === selectedDepartment;
@@ -193,7 +171,7 @@ export default function AdminDashboard({
     if (deptMatch && yearMatch) {
       setSubjects((prev) => [...prev, newSubject]);
     } else {
-      // Re-fetch current view to ensure consistency
+      // re-fetch if the new subject falls outside the current filter view
       fetchSubjects(selectedDepartment, selectedYear);
     }
 
@@ -211,17 +189,13 @@ export default function AdminDashboard({
     setSubjects((prev) =>
       prev.map((s) => (s.id === updatedSubject.id ? { ...s, ...updatedSubject } : s))
     );
-    // Refresh to handle cases where department or year was moved
+    // re-fetch in case department or year was changed
     fetchSubjects(selectedDepartment, selectedYear);
     onToast?.({
       type: 'success',
       message: `Subject "${updatedSubject.title}" updated successfully.`,
     });
   }
-
-  // -------------------------------------------------------------
-  // Delete Flow
-  // -------------------------------------------------------------
 
   function handleDeletePrompt(type, item) {
     setDeleteModal({
@@ -272,7 +246,6 @@ export default function AdminDashboard({
 
   return (
     <div className="min-h-screen bg-canvas dark:bg-slate-950 font-body text-ink dark:text-slate-100 antialiased transition-colors pb-16">
-      {/* Top Navbar */}
       <AdminHeader
         onLogout={onLogout}
         darkMode={darkMode}
@@ -280,7 +253,6 @@ export default function AdminDashboard({
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 animate-riseIn">
-        {/* Page Banner / Title */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink dark:text-white">
@@ -299,7 +271,6 @@ export default function AdminDashboard({
           </div>
         </div>
 
-        {/* Section 1: Department Selection (5 cards) */}
         <section aria-labelledby="dept-section-title" className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <h2
@@ -325,9 +296,7 @@ export default function AdminDashboard({
           </div>
         </section>
 
-        {/* Section 2: Year Filter Pills & Tab Navigation */}
         <div className="mb-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 shadow-sm">
-          {/* Year Pills Filter */}
           <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
             <YearPills
               selectedYear={selectedYear}
@@ -336,7 +305,6 @@ export default function AdminDashboard({
             />
           </div>
 
-          {/* Tab Selector: Students | Professors | Subjects */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div
               role="tablist"
@@ -374,7 +342,6 @@ export default function AdminDashboard({
           </div>
         </div>
 
-        {/* Section 3: Active Tab Content */}
         <section aria-label={`${activeTab} management`} className="animate-riseIn">
           {activeTab === 'students' && (
             <StudentsTable
@@ -414,7 +381,6 @@ export default function AdminDashboard({
         </section>
       </main>
 
-      {/* Modals */}
       <AssignProfessorModal
         isOpen={assignModal.isOpen}
         subject={assignModal.subject}

@@ -20,7 +20,6 @@ export default function App() {
   });
   const [toast, setToast] = useState(null);
 
-  // Restore authenticated session if tokens are in localStorage
   const [user, setUser] = useState(() => {
     const token = localStorage.getItem('accessToken');
     const role = localStorage.getItem('userRole');
@@ -50,7 +49,6 @@ export default function App() {
     }
   }, []);
 
-  // Wire API 401 unauthorized handler
   useEffect(() => {
     setUnauthorizedHandler(() => {
       handleLogout(true);
@@ -62,15 +60,12 @@ export default function App() {
     localStorage.setItem('theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
-  // Performs the real login call. Throws an Error with a user-facing
-  // message on failure so LoginPage can show it inline.
   async function handleLogin(role, { email, password, endpoint }) {
     const data = await apiRequest(endpoint, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
 
-    // data: { id, name?, accessToken, refreshToken }
     localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('userRole', role);
@@ -91,7 +86,6 @@ export default function App() {
     // RegisterPage shows its own success screen; no toast needed here.
   }
 
-  // If logged in as admin, display the Admin Dashboard
   if (user && user.role === 'admin') {
     return (
       <div className="relative">
@@ -106,7 +100,6 @@ export default function App() {
     );
   }
 
-  // If logged in as professor, display the Professor Dashboard
   if (user && user.role === 'professor') {
     return (
       <div className="relative">
@@ -122,7 +115,6 @@ export default function App() {
     );
   }
 
-  // Otherwise show login/register UI (untouched)
   return (
     <div className="relative">
       <button

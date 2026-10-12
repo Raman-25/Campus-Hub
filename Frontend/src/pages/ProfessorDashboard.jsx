@@ -4,7 +4,6 @@ import SubjectCard from '../components/professor/SubjectCard';
 import SubjectWorkspace from '../components/professor/SubjectWorkspace';
 import { professorApi, extractErrorMessage } from '../services/api';
 
-/** Returns "Good morning / afternoon / evening" based on the local hour */
 function getGreeting() {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -12,15 +11,6 @@ function getGreeting() {
   return 'Good evening';
 }
 
-/**
- * ProfessorDashboard
- * Props:
- *   user              { role, id, name? }  — from App login response
- *   onLogout          () => void
- *   darkMode          boolean
- *   onToggleDarkMode  () => void
- *   onToast           ({ type, message }) => void
- */
 export default function ProfessorDashboard({
   user,
   onLogout,
@@ -28,34 +18,22 @@ export default function ProfessorDashboard({
   onToggleDarkMode,
   onToast,
 }) {
-  // Display name fetched from /professor/me; falls back to user.name prop
   const [professorDisplayName, setProfessorDisplayName] = useState(user?.name ?? 'Professor');
-
-  // All subjects assigned to this professor
   const [subjects, setSubjects] = useState([]);
   const [subjectsLoading, setSubjectsLoading] = useState(false);
   const [subjectsError, setSubjectsError] = useState('');
-
-  // Year filter — null means "all years"
   const [selectedYear, setSelectedYear] = useState(null);
-
-  // Subject workspace
   const [activeSubject, setActiveSubject] = useState(null);
 
-  // ── Fetch professor profile ────────────────────────────────────
   useEffect(() => {
     professorApi.getMe()
       .then((data) => {
         if (data?.displayName) setProfessorDisplayName(data.displayName);
       })
-      .catch(() => {
-        // Silently fall back to the prop-supplied name — not worth a toast
-      });
+      .catch(() => {});
   }, []);
 
-  // ── Fetch subjects ─────────────────────────────────────────────
   const fetchSubjects = useCallback(async () => {
-
     setSubjectsLoading(true);
     setSubjectsError('');
     try {
@@ -74,21 +52,13 @@ export default function ProfessorDashboard({
     fetchSubjects();
   }, [fetchSubjects]);
 
-  // ── Derived: unique years from subject list ────────────────────
-  const availableYears = Array.from(new Set(subjects.map((s) => s.year))).sort(
-    (a, b) => a - b
-  );
+  const availableYears = Array.from(new Set(subjects.map((s) => s.year))).sort((a, b) => a - b);
+  const filteredSubjects = selectedYear == null ? subjects : subjects.filter((s) => s.year === selectedYear);
 
-  // ── Derived: filtered subjects ────────────────────────────────
-  const filteredSubjects =
-    selectedYear == null ? subjects : subjects.filter((s) => s.year === selectedYear);
-
-  // Count per year (for pill labels)
   function countForYear(year) {
     return subjects.filter((s) => s.year === year).length;
   }
 
-  // ── Subject workspace view ────────────────────────────────────
   if (activeSubject) {
     return (
       <div className="min-h-screen bg-canvas dark:bg-slate-950 font-body text-ink dark:text-slate-100 antialiased transition-colors pb-16">
@@ -108,7 +78,6 @@ export default function ProfessorDashboard({
     );
   }
 
-  // ── Dashboard landing view ────────────────────────────────────
   return (
     <div className="min-h-screen bg-canvas dark:bg-slate-950 font-body text-ink dark:text-slate-100 antialiased transition-colors pb-16">
       <ProfessorHeader
@@ -118,7 +87,6 @@ export default function ProfessorDashboard({
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 animate-riseIn">
-        {/* Page banner */}
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink dark:text-white">
@@ -129,7 +97,6 @@ export default function ProfessorDashboard({
             </p>
           </div>
 
-
           {!subjectsLoading && subjects.length > 0 && (
             <span className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 text-xs font-medium text-ink-muted dark:text-slate-300 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -138,7 +105,6 @@ export default function ProfessorDashboard({
           )}
         </div>
 
-        {/* Year pills filter */}
         {availableYears.length > 0 && (
           <section aria-labelledby="year-filter-title" className="mb-6">
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 shadow-sm">
@@ -155,7 +121,6 @@ export default function ProfessorDashboard({
                   aria-label="Filter subjects by academic year"
                   className="flex flex-wrap gap-2"
                 >
-                  {/* "All" pill */}
                   <button
                     type="button"
                     role="radio"
@@ -192,7 +157,6 @@ export default function ProfessorDashboard({
           </section>
         )}
 
-        {/* Subject grid */}
         <section aria-label="My subjects">
           {subjectsLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
@@ -222,7 +186,6 @@ export default function ProfessorDashboard({
               </button>
             </div>
           ) : subjects.length === 0 ? (
-            // Empty state
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-16 text-center shadow-sm">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-ink-muted dark:text-slate-400">
                 <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -236,7 +199,6 @@ export default function ProfessorDashboard({
               </p>
             </div>
           ) : filteredSubjects.length === 0 ? (
-            // Filter returned nothing
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 py-10 text-center shadow-sm">
               <p className="text-sm text-ink-muted dark:text-slate-400">
                 No subjects for Year {selectedYear}.
