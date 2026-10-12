@@ -12,5 +12,5 @@ public class ProfessorStudentDto {
     private String name;
     private String rollNumber;
     private Integer attendance;
-    private Grade grades;
+    private Grade grade;
 }

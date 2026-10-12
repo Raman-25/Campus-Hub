@@ -1,6 +1,8 @@
 package com.example.collegeManagementSystem.collage.controller.Professor;
 
 
+import com.example.collegeManagementSystem.collage.dto.Attendace.DailyAttendanceDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorGreetingDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorStudentDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorSubjectDto;
 import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceMarkRequest;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -41,6 +44,20 @@ public class ProfessorController {
     @GetMapping("/subjects")
     public ResponseEntity<List<ProfessorSubjectDto>> getMySubjects() {
         return ResponseEntity.ok(professorService.getMySubjects());
+    }
+
+    //The name of the Professor at the top
+    @GetMapping("/me")
+    public ResponseEntity<ProfessorGreetingDto> getMyGreeting() {
+        return ResponseEntity.ok(professorService.getMyGreeting());
+    }
+
+    //Attendance by the date \
+    @GetMapping("/subjects/{subjectId}/attendance")
+    public ResponseEntity<List<DailyAttendanceDto>> getAttendanceByDate(
+            @PathVariable Long subjectId,
+            @RequestParam LocalDate date) {
+        return ResponseEntity.ok(professorService.getAttendanceByDate(subjectId, date));
     }
 
 

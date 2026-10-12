@@ -1,4 +1,4 @@
-package com.example.collegeManagementSystem.collage.entity.Attendance;
+package com.example.collegeManagementSystem.collage.dto.Professor;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttendanceRecordDto {
-    private Long studentId;
-    private boolean present;
+public class ProfessorGreetingDto {
+    private String displayName;
 }

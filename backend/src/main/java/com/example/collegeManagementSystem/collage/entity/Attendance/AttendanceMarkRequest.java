@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.entity.Attendance;
 
+import com.example.collegeManagementSystem.collage.dto.Attendace.AttendanceRecordDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

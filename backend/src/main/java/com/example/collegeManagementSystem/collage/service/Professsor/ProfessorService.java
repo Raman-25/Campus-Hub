@@ -3,14 +3,12 @@ package com.example.collegeManagementSystem.collage.service.Professsor;
 import com.example.collegeManagementSystem.collage.Enum.Department;
 import com.example.collegeManagementSystem.collage.Enum.Grade;
 import com.example.collegeManagementSystem.collage.advice.exceptions.ResourceNotFoundException;
-import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorDto;
-import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorListDto;
-import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorStudentDto;
-import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorSubjectDto;
+import com.example.collegeManagementSystem.collage.dto.Attendace.DailyAttendanceDto;
+import com.example.collegeManagementSystem.collage.dto.Professor.*;
 import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
 import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceEntity;
 import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceMarkRequest;
-import com.example.collegeManagementSystem.collage.entity.Attendance.AttendanceRecordDto;
+import com.example.collegeManagementSystem.collage.dto.Attendace.AttendanceRecordDto;
 import com.example.collegeManagementSystem.collage.entity.GradeEntity;
 import com.example.collegeManagementSystem.collage.entity.Grades.GradeMarkRequest;
 import com.example.collegeManagementSystem.collage.entity.Grades.GradeRecordDto;
@@ -22,7 +20,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -260,6 +257,33 @@ public class ProfessorService{
                 .toList();
     }
 
+    public ProfessorGreetingDto getMyGreeting() {
+        Long professorId = getLoggedInProfessorId();
+        ProfessorEntity p = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor not found"));
+
+        String displayName = p.getName();
+        if (p.getTitle() != null) {
+            displayName = p.getTitle() + " " + p.getName();
+        }
+        return new ProfessorGreetingDto(displayName);
+    }
+
+
+    public List<DailyAttendanceDto> getAttendanceByDate(Long subjectId, LocalDate date) {
+        Long professorId = getLoggedInProfessorId();
+        SubjectEntity subject = getOwnedSubject(subjectId, professorId);
+
+        return studentRepository.findByDepartmentAndYear(subject.getDepartment(), subject.getYear())
+                .stream()
+                .map(s -> {
+                    Boolean present = attendanceRepository.findByStudentAndSubjectAndDate(s, subject, date)
+                            .map(AttendanceEntity::isPresent)
+                            .orElse(null);
+                    return new DailyAttendanceDto(s.getName(), s.getRollNumber(), present);
+                })
+                .toList();
+    }
 
 
     //CHECK IF THE PROFESSOR IS ASSIGNED TO THAT SUBJECT OR NOT

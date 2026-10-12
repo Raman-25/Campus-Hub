@@ -258,9 +258,20 @@ export const professorApi = {
     return apiRequest('/professor/subjects');
   },
 
+  // Logged-in professor's profile: GET /professor/me → { displayName }
+  getMe() {
+    return apiRequest('/professor/me');
+  },
+
   // Subject students: GET /professor/subjects/{subjectId}/students
   getStudents(subjectId) {
     return apiRequest(`/professor/subjects/${subjectId}/students`);
+  },
+
+  // Per-day attendance: GET /professor/subjects/{subjectId}/attendance?date=YYYY-MM-DD
+  // Returns [{ name, rollNumber, present: true/false/null }]
+  getAttendanceByDate(subjectId, date) {
+    return apiRequest(`/professor/subjects/${subjectId}/attendance?date=${date}`);
   },
 
   // Mark attendance: POST /professor/attendance

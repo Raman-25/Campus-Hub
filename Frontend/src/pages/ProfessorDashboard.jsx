@@ -4,6 +4,14 @@ import SubjectCard from '../components/professor/SubjectCard';
 import SubjectWorkspace from '../components/professor/SubjectWorkspace';
 import { professorApi, extractErrorMessage } from '../services/api';
 
+/** Returns "Good morning / afternoon / evening" based on the local hour */
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 /**
  * ProfessorDashboard
  * Props:
@@ -20,7 +28,8 @@ export default function ProfessorDashboard({
   onToggleDarkMode,
   onToast,
 }) {
-  const professorName = user?.name ?? 'Professor';
+  // Display name fetched from /professor/me; falls back to user.name prop
+  const [professorDisplayName, setProfessorDisplayName] = useState(user?.name ?? 'Professor');
 
   // All subjects assigned to this professor
   const [subjects, setSubjects] = useState([]);
@@ -33,8 +42,20 @@ export default function ProfessorDashboard({
   // Subject workspace
   const [activeSubject, setActiveSubject] = useState(null);
 
+  // ── Fetch professor profile ────────────────────────────────────
+  useEffect(() => {
+    professorApi.getMe()
+      .then((data) => {
+        if (data?.displayName) setProfessorDisplayName(data.displayName);
+      })
+      .catch(() => {
+        // Silently fall back to the prop-supplied name — not worth a toast
+      });
+  }, []);
+
   // ── Fetch subjects ─────────────────────────────────────────────
   const fetchSubjects = useCallback(async () => {
+
     setSubjectsLoading(true);
     setSubjectsError('');
     try {
@@ -101,12 +122,13 @@ export default function ProfessorDashboard({
         <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink dark:text-white">
-              Welcome back, {professorName}
+              {getGreeting()}, {professorDisplayName}
             </h1>
             <p className="mt-1 text-sm text-ink-muted dark:text-slate-400">
-              Manage attendance and grades for your assigned subjects.
+              Here's what's happening with your subjects today.
             </p>
           </div>
+
 
           {!subjectsLoading && subjects.length > 0 && (
             <span className="inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 text-xs font-medium text-ink-muted dark:text-slate-300 shadow-sm">
