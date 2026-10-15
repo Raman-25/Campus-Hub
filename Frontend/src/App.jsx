@@ -3,6 +3,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminDashboard from './pages/AdminDashboard';
 import ProfessorDashboard from './pages/ProfessorDashboard';
+import StudentDashboard from './pages/StudentDashboard';
 import Toast from './components/Toast';
 import { apiRequest, setUnauthorizedHandler } from './services/api';
 
@@ -105,6 +106,21 @@ export default function App() {
       <div className="relative">
         <Toast toast={toast} onClear={() => setToast(null)} />
         <ProfessorDashboard
+          user={user}
+          onLogout={() => handleLogout(false)}
+          darkMode={darkMode}
+          onToggleDarkMode={() => setDarkMode((d) => !d)}
+          onToast={setToast}
+        />
+      </div>
+    );
+  }
+
+  if (user && user.role === 'student') {
+    return (
+      <div className="relative">
+        <Toast toast={toast} onClear={() => setToast(null)} />
+        <StudentDashboard
           user={user}
           onLogout={() => handleLogout(false)}
           darkMode={darkMode}

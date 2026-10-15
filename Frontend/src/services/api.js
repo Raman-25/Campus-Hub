@@ -181,6 +181,28 @@ export const adminApi = {
   },
 };
 
+export const studentApi = {
+  /** GET /student/me → { name, rollNumber, department, year } */
+  getMe() {
+    return apiRequest('/student/me');
+  },
+
+  /** GET /student/subjects → [{ id, title, professorName, attendance, grade }] */
+  getSubjects() {
+    return apiRequest('/student/subjects');
+  },
+
+  /** GET /student/subjects/{id}/attendance → [{ date, present }] (last 3, newest first) */
+  getAttendance(subjectId) {
+    return apiRequest(`/student/subjects/${subjectId}/attendance`);
+  },
+
+  /** GET /student/subjects/{id}/attendance?date=YYYY-MM-DD → [{ date, present }] or [] */
+  getAttendanceByDate(subjectId, date) {
+    return apiRequest(`/student/subjects/${subjectId}/attendance?date=${date}`);
+  },
+};
+
 export const professorApi = {
   getSubjects() {
     return apiRequest('/professor/subjects');

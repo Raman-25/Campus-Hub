@@ -6,6 +6,8 @@ import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Long> {
@@ -17,8 +19,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Lo
 
     Optional<AttendanceEntity> findTopBySubjectOrderByDateDesc(SubjectEntity subject);
 
-
-
-
-
+    List<AttendanceEntity>findByStudentAndSubjectOrderByDateDesc(StudentEntity student, SubjectEntity subject);
 }
