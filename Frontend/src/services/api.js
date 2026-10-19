@@ -7,7 +7,9 @@
 
 const API_BASE =
   (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_API_BASE_URL) ||
-  'http://localhost:8080';
+  (typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://campus-hub-epjq.onrender.com');
 
 let onUnauthorizedCallback = null;
 
