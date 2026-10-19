@@ -25,7 +25,7 @@ public class SubjectController {
 
     @DeleteMapping("/{subjectId}")
     public ResponseEntity<Void> deleteSubjectById(@PathVariable Long subjectId) {
-        subjectService.deleteSubjectById(subjectId);
+        subjectService.deleteSubject(subjectId);
         return ResponseEntity.noContent().build();
     }
 

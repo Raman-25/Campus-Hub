@@ -1,6 +1,5 @@
 package com.example.collegeManagementSystem.collage.dto.Subject;
 
-import com.example.collegeManagementSystem.collage.Enum.Department;
 import lombok.*;
 
 @Data

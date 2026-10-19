@@ -55,14 +55,6 @@ export function getDepartmentName(code) {
 }
 
 /**
- * Helper to get enum code from readable department name
- */
-export function getDepartmentCode(name) {
-  const match = DEPARTMENTS.find((d) => d.name === name);
-  return match ? match.code : name;
-}
-
-/**
  * Helper to get year label
  */
 export function getYearLabel(yearNumber) {

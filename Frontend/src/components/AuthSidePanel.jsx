@@ -1,6 +1,6 @@
 const ROLE_COPY = {
   student: {
-    heading: 'Your semester, in one place',
+    heading: 'Your year, in one place',
     body: 'Timetables, grades, and assignments — synced the moment your department updates them.',
   },
   professor: {

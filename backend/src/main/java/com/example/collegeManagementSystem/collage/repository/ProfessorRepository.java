@@ -4,7 +4,6 @@ import com.example.collegeManagementSystem.collage.Enum.Department;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorListDto;
 import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;

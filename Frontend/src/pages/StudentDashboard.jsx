@@ -168,7 +168,7 @@ function AcademicSnapshot({ subjects, loading }) {
                 Subjects Enrolled
               </p>
               <p className="text-3xl font-bold text-ink dark:text-white mt-1 mb-1">{enrolledCount}</p>
-              <p className="text-xs text-ink-muted dark:text-slate-400">Active this semester</p>
+              <p className="text-xs text-ink-muted dark:text-slate-400">Active this year</p>
             </>
           )}
         </div>

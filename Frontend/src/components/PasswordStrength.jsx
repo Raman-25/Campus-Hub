@@ -34,7 +34,7 @@ export default function PasswordStrength({ password }) {
           <span
             key={i}
             className={`h-1.5 flex-1 rounded-full transition-colors ${
-              i < score ? level.color : 'bg-slate-150 bg-slate-200'
+              i < score ? level.color : 'bg-slate-200'
             }`}
           />
         ))}

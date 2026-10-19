@@ -4,12 +4,9 @@ package com.example.collegeManagementSystem.collage.controller.Admin;
 import com.example.collegeManagementSystem.collage.Enum.Department;
 import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorListDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentListDto;
-import com.example.collegeManagementSystem.collage.entity.Users.StudentEntity;
 import com.example.collegeManagementSystem.collage.service.Professsor.ProfessorService;
 import com.example.collegeManagementSystem.collage.service.Student.StudentService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

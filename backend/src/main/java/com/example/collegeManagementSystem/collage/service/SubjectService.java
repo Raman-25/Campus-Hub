@@ -7,6 +7,8 @@ import com.example.collegeManagementSystem.collage.dto.Subject.SubjectDto;
 import com.example.collegeManagementSystem.collage.dto.Subject.SubjectListDto;
 import com.example.collegeManagementSystem.collage.entity.SubjectEntity;
 import com.example.collegeManagementSystem.collage.entity.Users.ProfessorEntity;
+import com.example.collegeManagementSystem.collage.repository.AttendanceRepository;
+import com.example.collegeManagementSystem.collage.repository.GradeRepository;
 import com.example.collegeManagementSystem.collage.repository.ProfessorRepository;
 import com.example.collegeManagementSystem.collage.repository.SubjectRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +24,8 @@ public class SubjectService {
 
     private final SubjectRepository subjectRepository;
     private final ProfessorRepository professorRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final GradeRepository gradeRepository;
     private final ModelMapper modelMapper;
 
 
@@ -100,9 +104,11 @@ public class SubjectService {
     }
 
     @Transactional
-    public void deleteSubjectById(Long subjectId) {
+    public void deleteSubject(Long subjectId) {
         SubjectEntity subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new ResourceNotFoundException("Subject with id " + subjectId + " Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+        attendanceRepository.deleteAttendancesBySubject(subject);
+        gradeRepository.deleteGradesBySubject(subject);
         subjectRepository.delete(subject);
     }
 }

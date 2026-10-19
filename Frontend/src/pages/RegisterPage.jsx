@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { DEPARTMENTS } from '../constants/academic';
 import FormInput from '../components/FormInput';
 import RoleSelector from '../components/RoleSelector';
 import PasswordStrength from '../components/PasswordStrength';
@@ -12,13 +13,6 @@ const REGISTER_ENDPOINTS = {
   admin: '/auth/register/admin',
 };
 
-const DEPARTMENTS = [
-  'Computer Science',
-  'Electronics & Communication',
-  'Mechanical Engineering',
-  'Civil Engineering',
-];
-
 const TITLES = ['Dr.', 'Prof.', 'Mr.', 'Mrs.', 'Ms.'];
 
 const initialFields = {
@@ -27,7 +21,7 @@ const initialFields = {
   password: '',
   confirmPassword: '',
   rollNumber: '',
-  department: DEPARTMENTS[0],
+  department: DEPARTMENTS[0].name,
   year: '1',
   title: TITLES[0],
   agreeToTerms: false,
@@ -50,12 +44,6 @@ export default function RegisterPage({ onRegister, onNavigateToLogin }) {
   function setField(key, value) {
     setFields((f) => ({ ...f, [key]: value }));
   }
-
-  const roleFieldErrors = useMemo(() => {
-    if (role === 'student') return ['rollNumber'];
-    if (role === 'professor') return ['title'];
-    return [];
-  }, [role]);
 
   function validate() {
     const next = {};
@@ -328,11 +316,14 @@ function SelectField({ label, name, value, onChange, options }) {
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-sm text-ink dark:text-slate-100 focus:outline-none focus:border-primary"
       >
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
+        {options.map((opt) => {
+          const val = typeof opt === 'object' ? opt.name : opt;
+          return (
+            <option key={val} value={val}>
+              {val}
+            </option>
+          );
+        })}
       </select>
     </div>
   );

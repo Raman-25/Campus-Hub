@@ -59,5 +59,3 @@ export default function RoleSelector({ value, onChange, variant = 'dropdown' }) 
     </div>
   );
 }
-
-export { ROLES };

@@ -50,7 +50,7 @@ export default function EditSubjectModal({
     setError('');
 
     try {
-      const updated = await adminApi.updateSubject(subject.id, {
+      await adminApi.updateSubject(subject.id, {
         title: title.trim(),
         department,
         year: Number(year),
