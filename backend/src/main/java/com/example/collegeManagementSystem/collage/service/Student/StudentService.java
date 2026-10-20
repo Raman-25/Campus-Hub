@@ -72,10 +72,16 @@ public class StudentService {
 
     public List<StudentAttendanceDto> getMyAttendanceHistory(Long subjectId, LocalDate date) {
         Long studentId = getLoggedInStudentId();
+
         StudentEntity student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
         SubjectEntity subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+
+        if (!subject.getDepartment().equals(student.getDepartment())   //check if the subject belong to student or not
+                || !subject.getYear().equals(student.getYear())) {
+            throw new ResourceNotFoundException("Subject not found");
+        }
 
         if (date != null) {
             return attendanceRepository.findByStudentAndSubjectAndDate(student, subject, date)

@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll() // for fallback prevention from landing a 401 error to spring boot 500
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/professor/**").hasRole("PROFESSOR")
                         .requestMatchers("/student/**").hasRole("STUDENT")

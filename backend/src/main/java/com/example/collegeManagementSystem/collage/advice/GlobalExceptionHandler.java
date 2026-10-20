@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -55,6 +56,16 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(ex.getMessage(), HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(apiError));
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handleNotReadable(HttpMessageNotReadableException ex) {
+
+        ApiError apiError = new ApiError("Malformed request body: check JSON syntax and field values", HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(apiError));
+
+    }
+
 
 
 }
