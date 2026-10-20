@@ -7,9 +7,10 @@ import com.example.collegeManagementSystem.collage.dto.Professor.ProfessorLoginD
 import com.example.collegeManagementSystem.collage.dto.Student.StudentLoginDto;
 import com.example.collegeManagementSystem.collage.service.Auth.LoginService;
 import com.example.collegeManagementSystem.collage.service.Auth.SessionService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +30,13 @@ public class Login {
 
         LoginResponseDto responseDto = loginService.loginStudent(loginDto);
 
-        Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken",responseDto.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         sessionService.createSession(responseDto.getRefreshToken());
 
@@ -44,10 +48,13 @@ public class Login {
 
         LoginResponseDto responseDto = loginService.loginProfessor(loginDto);
 
-        Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken",responseDto.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         sessionService.createSession(responseDto.getRefreshToken());
 
@@ -59,10 +66,13 @@ public class Login {
 
         LoginResponseDto responseDto = loginService.loginAdmin(loginDto);
 
-        Cookie cookie = new Cookie("refreshToken", responseDto.getRefreshToken());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken",responseDto.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         sessionService.createSession(responseDto.getRefreshToken());
 
