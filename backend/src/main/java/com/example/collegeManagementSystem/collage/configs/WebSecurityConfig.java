@@ -1,5 +1,6 @@
 package com.example.collegeManagementSystem.collage.configs;
 
+import com.example.collegeManagementSystem.collage.filters.JwtAccessDeniedHandler;
 import com.example.collegeManagementSystem.collage.filters.JwtAuthFilter;
 import com.example.collegeManagementSystem.collage.filters.JwtAuthenticationEntryPoint;
 import lombok.AccessLevel;
@@ -24,6 +25,7 @@ public class WebSecurityConfig {
 
     JwtAuthFilter jwtAuthFilter;
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
 
     @Bean
@@ -32,6 +34,7 @@ public class WebSecurityConfig {
         httpSecurity
                 .csrf(csrf -> csrf.disable())
 
+                //AuthorizationFilter- Spring default
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
@@ -46,7 +49,10 @@ public class WebSecurityConfig {
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(ex -> ex.
+                        authenticationEntryPoint(jwtAuthenticationEntryPoint)  //unauthenticated request (no token / anonymous) hits
+                        .accessDeniedHandler(jwtAccessDeniedHandler)  //authenticated user is denied by the AuthorizationFilter
+                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }

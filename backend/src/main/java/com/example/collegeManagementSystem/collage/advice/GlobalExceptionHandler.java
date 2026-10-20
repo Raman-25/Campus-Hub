@@ -26,7 +26,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(apiError));
     }
 
-
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<ApiError>> handleNotFound(ResourceNotFoundException ex) {
         ApiError apiError = new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND);
