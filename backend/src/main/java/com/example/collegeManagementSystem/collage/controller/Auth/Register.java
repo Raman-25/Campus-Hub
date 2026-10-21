@@ -5,6 +5,7 @@ import com.example.collegeManagementSystem.collage.dto.Admin.adminRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Professor.professorRegisterDto;
 import com.example.collegeManagementSystem.collage.dto.Student.StudentRegisterDto;
 import com.example.collegeManagementSystem.collage.service.Auth.RegistrationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +28,7 @@ public class Register {
     }
 
     @PostMapping("/professor")
-    public ResponseEntity<String> registerProfessor(@RequestBody professorRegisterDto professor){
+    public ResponseEntity<String> registerProfessor(@Valid @RequestBody professorRegisterDto professor){
         registrationService.registerProfessor(professor);
 
         return ResponseEntity.ok("Professor Register Successfully");

@@ -7,6 +7,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,15 +38,15 @@ public class RefreshToken {
                 .map(Cookie::getValue)
                 .orElseThrow(()-> new AuthorizationServiceException("Refresh Token Not Found inside Cookie"));
 
-
         LoginResponseDto loginResponseDto = tokenService.refreshToken(refreshToken);
 
-        Cookie cookie = new Cookie("refreshToken", loginResponseDto.getRefreshToken());
-        cookie.setHttpOnly(true);
-        // "/" = cookie is sent with every request; without it, the cookie only goes to the URL that created it
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", loginResponseDto.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(loginResponseDto);
     }
