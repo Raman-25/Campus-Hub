@@ -121,12 +121,6 @@ Each role's home screen is a single aggregated response in a DTO shaped for that
 **5. 401 and 403 mean different things — and the frontend runs on that contract.**
 Separated at the filter level with a custom `AccessDeniedHandler`; malformed bodies return 400, not an auth error. The frontend treats 401 as its only "session dead" signal — a student clicking an admin URL gets a clean 403 and stays logged in, not a forced logout.
 
-## 🛡️ Security Model
-
-- BCrypt password hashing; JWT claims (user id, role, token type) are signature-verified — a tampered token fails before any role check
-- `HttpOnly` refresh cookie (`SameSite=None; Secure`) — usable by the browser, unreadable by scripts; CORS locked to the deployed frontend origin
-- DTOs in and out — entities and password hashes never cross the wire; bean validation at the boundary, with field-level 400 messages
-
 ## 🧰 Tech Stack
 
 **Backend** — Java 21 · Spring Boot 4 · Spring Security · Spring Data JPA · JJWT · Maven · multi-stage Docker build
