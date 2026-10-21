@@ -89,7 +89,7 @@ erDiagram
     ADMIN ||--o{ SESSION : "logs in"
 ```
 
-Three user tables (student, professor, admin) share one mapped-superclass shape — id, name, unique email, BCrypt password hash, department. Two rules do the heavy lifting: **attendance is unique per (student, subject, date)**, so re-marking a day updates the record instead of duplicating it; and **subject.professor_id is nullable**, so a subject survives its professor being removed. There is no enrollment table yet — a student's subjects are derived from their department + year (a real enrollment model is on the roadmap).
+Three user tables share one mapped-superclass shape (id, name, unique email, BCrypt hash, department). **Attendance is unique per (student, subject, date)** — re-marking updates, never duplicates — and **subject.professor_id is nullable**, so subjects survive a professor's removal. No enrollment table yet: rosters derive from department + year.
 
 ## 🔄 Request Flow
 
@@ -107,19 +107,19 @@ What happens when a logged-in professor opens a subject's roster:
 The parts of this project with real design decisions behind them:
 
 **1. Session management with per-role caps.**
-Refresh tokens are database-backed sessions, not fire-and-forget JWTs. Each role gets a session limit — **Admin: 1, Professor: 3, Student: 3** — and logging in beyond the cap evicts the oldest session. Refreshing **rotates** the session (old row deleted, new tokens issued), and logout deletes the row — so access can genuinely be revoked, even though the access tokens themselves are stateless (15-minute) JWTs.
+Refresh tokens are database-backed sessions, not fire-and-forget JWTs — **Admin: 1, Professor: 3, Student: 3**, oldest evicted past the cap. Refresh rotates the session and logout deletes it, so stateless 15-minute access tokens still get real revocation.
 
 **2. Attendance and grades are records, not checkboxes.**
-Every attendance entry is a row keyed by (student, subject, date) with a uniqueness guarantee — re-marking the same day **updates** the record instead of duplicating it, and grades upsert the same way. That record history is what powers the real features: professors re-open any date and see it pre-filled with what they saved, and students get a per-subject attendance percentage plus a day-by-day history (latest records, or any specific date) computed from those rows.
+Every entry is a row keyed by (student, subject, date) with a uniqueness guarantee — re-marking **upserts** instead of duplicating. That history powers pre-filled re-marking for professors, and per-subject percentages plus day-by-day history for students.
 
 **3. An API that doesn't leak.**
-Three deliberate information-hiding decisions in one design. Professor endpoints re-verify the subject actually belongs to the caller — being *a* professor is never enough. A student probing another department's subject gets the **identical 404** as a subject that doesn't exist, so the API never confirms what exists for someone else. And login failures answer the same "invalid credentials" whether the email is unknown or the password is wrong — no account enumeration. Identity always comes from the token, never from a URL or body parameter a user could edit.
+Professor endpoints re-verify subject ownership on every request — being *a* professor is never enough. A student probing another department's subject gets the **identical 404** as one that doesn't exist, and login answers the same "invalid credentials" for unknown email or wrong password — no account enumeration.
 
 **4. Purpose-built dashboards, not CRUD dumps.**
-Each role's home screen is a single aggregated response, assembled server-side into a DTO shaped for that screen. The student dashboard returns their subjects with attendance %, grade, and professor name in **one call**. The admin dashboard drills department → year with live counts of students, professors, and subjects. The professor's class view merges the roster with the day's already-saved attendance. Entities never cross the wire — only these read models do.
+Each role's home screen is a single aggregated response in a DTO shaped for that screen — the student dashboard returns subjects, attendance %, grade, and professor name in **one call**; the admin dashboard drills department → year with live counts. Entities never cross the wire.
 
-**5. 401 and 403 mean different things here — and the frontend runs on that contract.**
-Authentication failure (401) and wrong-role access (403) are separated at the filter level with a custom `AccessDeniedHandler`, and malformed request bodies return 400 instead of collapsing into an auth error. This isn't pedantry: the frontend treats 401 as its only "session is dead" signal, so a student who clicks an admin URL gets a clean 403 and stays logged in — not a forced logout.
+**5. 401 and 403 mean different things — and the frontend runs on that contract.**
+Separated at the filter level with a custom `AccessDeniedHandler`; malformed bodies return 400, not an auth error. The frontend treats 401 as its only "session dead" signal — a student clicking an admin URL gets a clean 403 and stays logged in, not a forced logout.
 
 ## 🛡️ Security Model
 
@@ -181,4 +181,4 @@ Known gaps and where this goes next:
 
 ---
 
-Thanks for checking out Campus Hub — the live demo above is the real thing, running on the stack described here.
+**Thanks for checking out Campus Hub.**
